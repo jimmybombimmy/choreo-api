@@ -1,13 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from .features.task_types.router import router as task_types_router
+
 app = FastAPI()
 
+app.include_router(task_types_router)
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: bool | None = None
+
+# class Item(BaseModel):
+#     name: str
+#     price: float
+#     is_offer: bool | None = None
 
 
 @app.get("/")
