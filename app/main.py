@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 
 from .features.task_types.router import router as task_types_router
 

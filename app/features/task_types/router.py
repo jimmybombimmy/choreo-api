@@ -17,7 +17,7 @@ async def get_all_task_types():
 
 
 @router.get("/{item_id}")
-async def get_all_task_types(
+async def get_task_type_by_id(
     item_id: Annotated[int, Path(title="The ID of the task_type to get")],
 ):
-    return {"temp": "a task type retrieved"}
+    return {"temp": f"task type {item_id} retrieved"}

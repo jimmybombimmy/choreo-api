@@ -3,7 +3,17 @@ repos:
     rev: v1.2.3
     hooks:
       - id: trailing-whitespace
-  - repo: https://github.com/psf/black
-    rev: 22.10.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.21
     hooks:
-      - id: black
+      - id: ruff-check
+        # https://docs.astral.sh/ruff/rules
+        args: ["--select=FAST001,FAST002,FAST003,F841,RUF059,B007,ARG001"]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty check
+        entry: uv run ty check .
+        language: python
+        files: ^app/
