@@ -16,7 +16,7 @@ app.include_router(task_types_router)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "World."}
 
 
 # @app.get("/items/{item_id}")
