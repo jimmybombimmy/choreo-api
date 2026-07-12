@@ -1,1 +1,1 @@
-# Config your env vars & key module paths here
+"""Config your env vars & key module paths here"""

@@ -1,1 +1,1 @@
-# DB setup will be in this file 
+print("DB setup will be in this file")

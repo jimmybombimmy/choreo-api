@@ -1,1 +1,1 @@
-# Setup your own custom logger here
+"""Setup your own custom logger here"""
