@@ -24,6 +24,14 @@ source .venv/bin/activate
 fastapi dev
 ```
 
+## Docker Setup
+
+Run the following command to get docker running locally
+
+```bash
+docker-compose up -d --build
+```
+
 ## Pre-commit
 
 This repo relies on pre-commit hooks to format and lint the files before pushing to Git.

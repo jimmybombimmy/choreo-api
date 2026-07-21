@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  app:
+    # 1. Tells compose to build the image using the local Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # 2. Names the container for easy tracking
+    container_name: uv-app-container
+
+    # 3. Keeps the terminal interactive (like the -it flag)
+    stdin_open: true
+    tty: true
+
+    # 4. Uncomment and adjust if your app runs a web server (e.g., FastAPI)
+    ports:
+      - "8000:8000"
+
+    # 5. Uncomment if your app needs environment variables
+    # environment:
+    #   - DATABASE_URL=secret_value
