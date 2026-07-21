@@ -14,9 +14,13 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version-file: ".python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Build release distributions
         run: uv sync --all-groups
