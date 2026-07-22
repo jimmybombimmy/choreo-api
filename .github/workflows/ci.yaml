@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -25,6 +25,10 @@ jobs:
       - name: Build release distributions
         run: uv sync --all-groups
 
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Run pre-commit linting
         run: uv run pre-commit run --all-file
 
