@@ -28,8 +28,5 @@ jobs:
       - name: Run pre-commit linting
         run: uv run pre-commit run --all-file
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out code
-  #       uses: actions/checkout@v4
+      - name: Run tests
+        run: uv run pytest
