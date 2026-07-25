@@ -6,6 +6,7 @@ on:
     tags: ["v*.*.*"]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, edited]
 
 jobs:
   build-and-test:
