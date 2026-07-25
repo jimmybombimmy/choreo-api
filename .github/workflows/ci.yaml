@@ -1,0 +1,40 @@
+name: Choreo API CI Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, edited]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify pull request title
+        uses: nicklegan/github-pull-request-naming-policy-action@v1.0.0
+        with:
+          title-regex: "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([^)]+\\))?!?:\\sCHOR-\\d+:\\s.+$"
+          title-flags: "i"
+          title-error-message: "The pull request title must follow [Semantic Commit Messaging](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) rules and include your 'CHOR-X' JIRA ticket number. For example: 'feat: CHOR-123: my pr description'"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+
+      - name: Build release distributions
+        run: uv sync --all-groups
+
+      - name: Run pre-commit linting
+        run: uv run pre-commit run --all-file
+
+      - name: Run tests
+        run: uv run pytest
