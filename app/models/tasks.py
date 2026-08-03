@@ -8,6 +8,8 @@ from app.utils.get_datetime_bst import get_datetime_bst
 
 
 class Tasks(SQLModel, table=True):
+    __tablename__ = "tasks"
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(max_length=30)
     task_list_id: UUID = Field(foreign_key="task_lists.id")

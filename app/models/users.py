@@ -2,12 +2,14 @@ from uuid import UUID, uuid4
 from datetime import datetime
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, Column, SQLModel
+from sqlmodel import Field, Column, Relationship, SQLModel
 
 from app.utils.get_datetime_bst import get_datetime_bst
 
 
-class Users(SQLModel, table=True):
+class User(SQLModel, table=True):
+    __tablename__ = "users"
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     username: str = Field(max_length=30)
     email: str = Field(max_length=254)
@@ -19,4 +21,3 @@ class Users(SQLModel, table=True):
         default=None,
         sa_column=Column(DateTime(timezone=True)),
     )
-    task_list_ids: list[UUID]
