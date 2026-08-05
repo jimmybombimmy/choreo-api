@@ -20,6 +20,6 @@ class UserTaskListLink(SQLModel, table=True):
 
     user_id: UUID = Field(foreign_key="users.id", primary_key=True)
     task_list_id: UUID = Field(foreign_key="task_lists.id", primary_key=True)
-    role: UTLMRoles = Field(default=UTLMRoles.viewer)
+    role: UTLMRoles = Field(default=UTLMRoles.VIEWER)
     created_at: datetime = Field(default_factory=get_datetime_bst)
     updated_at: datetime | None = None
