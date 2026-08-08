@@ -8,7 +8,7 @@ repos:
     hooks:
       - id: ruff-check
         # https://docs.astral.sh/ruff/rules
-        args: ["--select=FAST001,FAST002,FAST003,F841,RUF059,B007,ARG001"]
+        args: ["--select=ARG001,F841,F401,FAST001,FAST002,FAST003,RUF059,B007"]
       - id: ruff-format
   - repo: local
     hooks:
