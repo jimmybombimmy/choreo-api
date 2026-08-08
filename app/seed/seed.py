@@ -1,9 +1,12 @@
 from sqlmodel import Session
 
+from copy import deepcopy
+
+
 from app.core.db import engine
-from app.models.users import User
 from app.models.seed import LocalSeedCollection
-from app.services.user_service import create_user, get_current_user
+from app.services.user_service import create_user
+from app.seed.test_data import new_users
 
 # To do:
 # - Seed all test data
@@ -17,13 +20,12 @@ from app.services.user_service import create_user, get_current_user
 # - Unit tests
 # - Integration tests
 
-new_user = User(username="test-user", email="test@user.com", password="test")
-
 with Session(engine) as session:
     seed_data = LocalSeedCollection(users=[])
-    created_user = create_user(new_user, session)
-
-    seed_data.users.append(created_user)
+    for user in new_users:
+        created_user = create_user(user, session)
+        # without deepcopy, session.refresh(user) flushes it from memory and you won't find it in seed_data
+        seed_data.users.append(deepcopy(created_user))
 
     seed_dict = LocalSeedCollection.model_validate(seed_data).model_dump_json()
     # retrieved_user = get_current_user(seed_data.users[0].id, session)
