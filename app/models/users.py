@@ -2,7 +2,7 @@ from uuid import UUID, uuid4
 from datetime import datetime
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, Column, Relationship, SQLModel
+from sqlmodel import Field, Column, SQLModel
 
 from app.utils.get_datetime_bst import get_datetime_bst
 

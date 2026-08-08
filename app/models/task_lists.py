@@ -7,7 +7,7 @@ from sqlmodel import Field, Column, SQLModel
 from app.utils.get_datetime_bst import get_datetime_bst
 
 
-class TaskLists(SQLModel, table=True):
+class TaskList(SQLModel, table=True):
     __tablename__ = "task_lists"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)

@@ -7,7 +7,7 @@ from sqlmodel import Field, Column, SQLModel
 from app.utils.get_datetime_bst import get_datetime_bst
 
 
-class Collections(SQLModel, table=True):
+class Collection(SQLModel, table=True):
     __tablename__ = "collections"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
