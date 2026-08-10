@@ -12,7 +12,6 @@ class TaskList(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(max_length=30)
-    collection_id: UUID = Field(foreign_key="collections.id")
     created_at: datetime = Field(
         default_factory=get_datetime_bst, sa_column=Column(DateTime(timezone=True))
     )
