@@ -11,7 +11,6 @@ class Collection(SQLModel, table=True):
     __tablename__ = "collections"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id")
     name: str = Field(max_length=30)
     description: str | None = Field(default=None, max_length=140)
     task_type_id: str | None = Field(default=None, max_length=30)
