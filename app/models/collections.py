@@ -13,12 +13,12 @@ class Collection(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(max_length=30)
     description: str | None = Field(default=None, max_length=140)
-    task_type_id: str | None = Field(default=None, max_length=30)
+    task_type: str | None = Field(default=None, max_length=30)
     created_at: datetime = Field(
         default_factory=get_datetime_bst, sa_column=Column(DateTime(timezone=True))
     )
     last_completed_at: datetime | None = Field(
-        default_factory=get_datetime_bst, sa_column=Column(DateTime(timezone=True))
+        sa_column=Column(DateTime(timezone=True))
     )
     updated_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True))

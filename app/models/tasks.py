@@ -19,9 +19,6 @@ class Task(SQLModel, table=True):
     last_completed_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True))
     )
-    updated_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True))
-    )
     completed: bool = False
     locked: bool = False
     parent_task_id: UUID | None = Field(default=None, foreign_key="tasks.id")

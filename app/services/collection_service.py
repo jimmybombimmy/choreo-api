@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.core.db import SessionDep
 from app.models.collections import Collection
 
@@ -11,7 +9,7 @@ def create_collection(collection: Collection, session: SessionDep) -> Collection
     return collection
 
 
-def get_current_collection(user_id: Collection, session: SessionDep) -> Collection:
+def get_current_collection(user_id: Collection, session: SessionDep):
     collection = session.get(Collection, user_id)
     print(f"collection {collection}")
     return collection

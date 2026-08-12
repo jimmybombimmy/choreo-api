@@ -11,7 +11,7 @@ def create_user(user: User, session: SessionDep) -> User:
     return user
 
 
-def get_current_user(user_id: UUID, session: SessionDep):
+def get_current_user(user_id: UUID, session: SessionDep) -> User:
     user = session.get(User, user_id)
     print(f"user {user}")
     return user
