@@ -9,12 +9,6 @@ def create_task(task: Task, session: SessionDep) -> Task:
     return task
 
 
-def get_current_task(user_id: Task, session: SessionDep):
-    task = session.get(Task, user_id)
-    print(f"task {task}")
-    return task
-
-
 def delete_user(task: Task, session: SessionDep):
     session.delete(task)
     session.commit()
