@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.core.db import SessionDep
 from app.models.users import User
 

@@ -21,4 +21,3 @@ class Task(SQLModel, table=True):
     )
     completed: bool = False
     locked: bool = False
-    parent_task_id: UUID | None = Field(default=None, foreign_key="tasks.id")

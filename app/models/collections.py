@@ -18,7 +18,7 @@ class Collection(SQLModel, table=True):
         default_factory=get_datetime_bst, sa_column=Column(DateTime(timezone=True))
     )
     last_completed_at: datetime | None = Field(
-        sa_column=Column(DateTime(timezone=True))
+        default=None, sa_column=Column(DateTime(timezone=True))
     )
     updated_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True))

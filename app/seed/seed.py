@@ -5,11 +5,28 @@ from copy import deepcopy
 
 from app.core.db import engine
 from app.models.seed import LocalSeedCollection
-from app.seed.test_data import test_users, test_collections, test_task_lists, test_tasks
+from app.seed.test_data import (
+    test_users,
+    test_collections,
+    test_task_lists,
+    test_tasks,
+    test_collection_task_list_memberships,
+    test_user_collection_memberships,
+    test_user_task_list_memberships,
+)
 from app.services.user_service import create_user
 from app.services.collection_service import create_collection
 from app.services.task_list_service import create_task_list
 from app.services.task_service import create_task
+from app.services.collection_task_list_membership_service import (
+    create_collection_task_list_membership,
+)
+from app.services.user_collection_membership_service import (
+    create_user_collection_membership,
+)
+from app.services.user_task_list_membership_service import (
+    create_user_task_list_membership,
+)
 
 # To do:
 # - Seed all test data
@@ -22,10 +39,6 @@ from app.services.task_service import create_task
 # - Ensure all types are created and present in models - this hasn't been done yet
 # - Unit tests
 # - Integration tests
-
-# To do (next time):
-# Make tasks (and maybe others) able to be longer than 30 chars
-# Get rid of sub-tasks (an over-requirement for now)
 
 with Session(engine) as session:
     seed_data = LocalSeedCollection(users=[], collections=[])
@@ -45,6 +58,18 @@ with Session(engine) as session:
     for task in test_tasks:
         created_task = create_task(task, session)
         seed_data.tasks.append(deepcopy(created_task))
+
+    for ctlm in test_collection_task_list_memberships:
+        created_ctlm = create_collection_task_list_membership(ctlm, session)
+        seed_data.collection_task_list_memberships.append(deepcopy(created_ctlm))
+
+    for utlm in test_user_task_list_memberships:
+        created_utlm = create_user_task_list_membership(utlm, session)
+        seed_data.user_task_list_memberships.append(deepcopy(created_utlm))
+
+    for ucm in test_user_collection_memberships:
+        created_ucm = create_user_collection_membership(ucm, session)
+        seed_data.user_collection_memberships.append(deepcopy(created_ucm))
 
     seed_dict = LocalSeedCollection.model_validate(seed_data).model_dump_json()
 

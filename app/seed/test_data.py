@@ -4,6 +4,11 @@ from app.models.collections import Collection
 from app.models.tasks import Task
 from app.models.task_lists import TaskList
 from app.models.users import User
+from app.models.user_collection_memberships import UserCollectionMembership
+from app.models.user_task_list_memberships import UserTaskListMembership
+from app.models.collection_task_list_memberships import CollectionTaskListMembership
+
+from app.enums.model_enums import MembershipRoles
 
 # users and task_lists are double-linked through user_task_list_memberships
 # tasks are inside of task_lists
@@ -20,6 +25,7 @@ ids: dict[str, list[UUID]] = {
         UUID("d78aa0d9-14a6-49a9-9afa-c941f104528e"),
         UUID("eaf768a1-a730-4565-9777-09e970899756"),
         UUID("b9266807-f8c0-4e26-afe5-9f42a7c7931e"),
+        UUID("198bf72d-9de5-40fa-b14c-362a4268bca4"),
     ],
     "task_lists": [
         UUID("712f2ac5-007b-4192-b902-f17b0fa80a4d"),
@@ -124,13 +130,18 @@ test_collections: list[Collection] = [
         name="Daily To Do's",
         description="To be done every day",
     ),
+    Collection(
+        id=ids["collections"][3],
+        name="Shopping Lists",
+        description="For Shopping",
+    ),
 ]
 
 test_task_lists: list[TaskList] = [
     TaskList(id=ids["task_lists"][0], name="Bedroom"),
     TaskList(id=ids["task_lists"][1], name="Bathroom"),
     TaskList(id=ids["task_lists"][2], name="Living Room"),
-    TaskList(id=ids["task_lists"][3], name="Kitchen"),
+    TaskList(id=ids["task_lists"][3], name="Kitchen"),  # Have this be an invite
     TaskList(id=ids["task_lists"][4], name="Shopping"),
     TaskList(id=ids["task_lists"][5], name="Morning"),
     TaskList(id=ids["task_lists"][6], name="Evening"),
@@ -264,5 +275,123 @@ test_tasks: list[Task] = [
     ),
     Task(
         id=ids["tasks"][60], name="Read before bed", task_list_id=ids["task_lists"][6]
+    ),
+]
+
+test_user_collection_memberships: list[UserCollectionMembership] = [
+    UserCollectionMembership(
+        user_id=ids["users"][0],
+        collection_id=ids["collections"][0],
+        role=MembershipRoles.OWNER,
+    ),
+    UserCollectionMembership(
+        user_id=ids["users"][1],
+        collection_id=ids["collections"][1],
+        role=MembershipRoles.OWNER,
+    ),
+    UserCollectionMembership(
+        user_id=ids["users"][1],
+        collection_id=ids["collections"][2],
+        role=MembershipRoles.OWNER,
+    ),
+    UserCollectionMembership(
+        user_id=ids["users"][2],
+        collection_id=ids["collections"][3],
+        role=MembershipRoles.OWNER,
+    ),
+]
+
+test_user_task_list_memberships: list[UserTaskListMembership] = [
+    # test-user1 - shared todo list (called 'Chores' - diff from test-user2's name)
+    UserTaskListMembership(
+        user_id=ids["users"][0],
+        task_list_id=ids["task_lists"][0],
+        role=MembershipRoles.OWNER,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][0],
+        task_list_id=ids["task_lists"][1],
+        role=MembershipRoles.OWNER,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][0],
+        task_list_id=ids["task_lists"][2],
+        role=MembershipRoles.OWNER,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][0],
+        task_list_id=ids["task_lists"][3],
+        role=MembershipRoles.OWNER,
+    ),
+    # test-user2 - shared todo list (called 'Joint house work' - diff from test-user1's name)
+    UserTaskListMembership(
+        user_id=ids["users"][1],
+        task_list_id=ids["task_lists"][0],
+        role=MembershipRoles.EDITOR,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][1],
+        task_list_id=ids["task_lists"][1],
+        role=MembershipRoles.EDITOR,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][1],
+        task_list_id=ids["task_lists"][2],
+        role=MembershipRoles.EDITOR,
+    ),
+    # No task_list 3 as this will be an invite
+    # test-user3 - Daily To Do's
+    UserTaskListMembership(
+        user_id=ids["users"][2],
+        task_list_id=ids["task_lists"][5],
+        role=MembershipRoles.OWNER,
+    ),
+    UserTaskListMembership(
+        user_id=ids["users"][2],
+        task_list_id=ids["task_lists"][6],
+        role=MembershipRoles.OWNER,
+    ),
+    # test-user1 - shopping list - will invite test-user2 for this
+    UserTaskListMembership(
+        user_id=ids["users"][1],
+        task_list_id=ids["task_lists"][4],
+        role=MembershipRoles.OWNER,
+    ),
+]
+
+test_collection_task_list_memberships: list[CollectionTaskListMembership] = [
+    # test-user-1's house chore list
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][0], task_list_id=ids["task_lists"][0]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][0], task_list_id=ids["task_lists"][1]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][0], task_list_id=ids["task_lists"][2]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][0], task_list_id=ids["task_lists"][3]
+    ),
+    # test-user-2's house chore list (they don't do the kitchen)
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][1], task_list_id=ids["task_lists"][0]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][1], task_list_id=ids["task_lists"][1]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][1], task_list_id=ids["task_lists"][2]
+    ),
+    # test-user-3 has the daily tasks
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][2], task_list_id=ids["task_lists"][5]
+    ),
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][2], task_list_id=ids["task_lists"][6]
+    ),
+    # test-user-1 and test-user-2 will share this as a collection
+    CollectionTaskListMembership(
+        collection_id=ids["collections"][3], task_list_id=ids["task_lists"][4]
     ),
 ]

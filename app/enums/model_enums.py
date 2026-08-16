@@ -1,15 +1,16 @@
-from sqlmodel import Enum
+from enum import Enum
 
 
-class MembershipRoles(Enum):
-    VIEWER = "viewer"
-    EDITOR = "editor"
-    ADMIN = "admin"
-    SUPERADMIN = "superadmin"
+class MembershipRoles(str, Enum):
+    VIEWER = "VIEWER"
+    USER = "USER"
+    EDITOR = "EDITOR"
+    ADMIN = "ADMIN"
+    OWNER = "OWNER"
 
 
-class InvitationStatus(Enum):
-    PENDING = ("PENDING",)
-    ACCEPTED = ("ACCEPTED",)
-    DECLINED = ("DECLINED",)
-    EXPIRED = ("EXPIRED",)
+class InvitationStatus(str, Enum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    DECLINED = "DECLINED"
+    EXPIRED = "EXPIRED"
