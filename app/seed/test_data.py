@@ -7,8 +7,10 @@ from app.models.users import User
 from app.models.user_collection_memberships import UserCollectionMembership
 from app.models.user_task_list_memberships import UserTaskListMembership
 from app.models.collection_task_list_memberships import CollectionTaskListMembership
+from app.models.collection_invitations import CollectionInvitation
+from app.models.task_list_invitations import TaskListInvitation
 
-from app.enums.model_enums import MembershipRoles
+from app.enums.model_enums import MembershipRoles, InvitationStatus
 
 # users and task_lists are double-linked through user_task_list_memberships
 # tasks are inside of task_lists
@@ -351,7 +353,7 @@ test_user_task_list_memberships: list[UserTaskListMembership] = [
         task_list_id=ids["task_lists"][6],
         role=MembershipRoles.OWNER,
     ),
-    # test-user1 - shopping list - will invite test-user2 for this
+    # test-user1 - shopping list - will invite test-user2 for this as collection
     UserTaskListMembership(
         user_id=ids["users"][1],
         task_list_id=ids["task_lists"][4],
@@ -390,8 +392,43 @@ test_collection_task_list_memberships: list[CollectionTaskListMembership] = [
     CollectionTaskListMembership(
         collection_id=ids["collections"][2], task_list_id=ids["task_lists"][6]
     ),
-    # test-user-1 and test-user-2 will share this as a collection
+    # test-user-1 will share to test-user-2 as a collection
     CollectionTaskListMembership(
         collection_id=ids["collections"][3], task_list_id=ids["task_lists"][4]
+    ),
+]
+
+test_collection_invitations: list[CollectionInvitation] = [
+    CollectionInvitation(
+        collection_id=ids["collections"][3],
+        sender_id=ids["users"][0],
+        recipient_id=ids["users"][1],
+    )
+]
+
+test_task_list_invitations: list[TaskListInvitation] = [
+    TaskListInvitation(
+        task_list_id=ids["task_lists"][0],
+        sender_id=ids["users"][0],
+        recipient_id=ids["users"][1],
+        status=InvitationStatus.ACCEPTED,
+    ),
+    TaskListInvitation(
+        task_list_id=ids["task_lists"][1],
+        sender_id=ids["users"][0],
+        recipient_id=ids["users"][1],
+        status=InvitationStatus.ACCEPTED,
+    ),
+    TaskListInvitation(
+        task_list_id=ids["task_lists"][2],
+        sender_id=ids["users"][0],
+        recipient_id=ids["users"][1],
+        status=InvitationStatus.ACCEPTED,
+    ),
+    TaskListInvitation(
+        task_list_id=ids["task_lists"][3],
+        sender_id=ids["users"][0],
+        recipient_id=ids["users"][1],
+        status=InvitationStatus.PENDING,
     ),
 ]

@@ -13,6 +13,8 @@ from app.seed.test_data import (
     test_collection_task_list_memberships,
     test_user_collection_memberships,
     test_user_task_list_memberships,
+    test_collection_invitations,
+    test_task_list_invitations,
 )
 from app.services.user_service import create_user
 from app.services.collection_service import create_collection
@@ -27,12 +29,13 @@ from app.services.user_collection_membership_service import (
 from app.services.user_task_list_membership_service import (
     create_user_task_list_membership,
 )
+from app.services.collection_invitation import create_collection_invitation
+from app.services.task_list_invitation import create_task_list_invitation
 
 # To do:
 # - Seed all test data
 # - Add all seeded data to an object variable
 # - Save this to a file
-# - Also print it when you seed
 # - √ Add it to .gitignore
 # - Add in your test data to remove all previous test data by uuid
 # - Add prints to tell you this is done
@@ -70,6 +73,14 @@ with Session(engine) as session:
     for ucm in test_user_collection_memberships:
         created_ucm = create_user_collection_membership(ucm, session)
         seed_data.user_collection_memberships.append(deepcopy(created_ucm))
+
+    for ci in test_collection_invitations:
+        created_ci = create_collection_invitation(ci, session)
+        seed_data.collection_invitations.append(deepcopy(created_ci))
+
+    for tli in test_task_list_invitations:
+        created_tli = create_task_list_invitation(tli, session)
+        seed_data.task_list_invitations.append(deepcopy(created_tli))
 
     seed_dict = LocalSeedCollection.model_validate(seed_data).model_dump_json()
 

@@ -9,6 +9,8 @@ from .tasks import Task
 from .user_collection_memberships import UserCollectionMembership
 from .user_task_list_memberships import UserTaskListMembership
 from .collection_task_list_memberships import CollectionTaskListMembership
+from .collection_invitations import CollectionInvitation
+from .task_list_invitations import TaskListInvitation
 
 
 class LocalSeedCollection(SQLModel):
@@ -25,3 +27,5 @@ class LocalSeedCollection(SQLModel):
     collection_task_list_memberships: List[CollectionTaskListMembership] = Field(
         default_factory=list
     )
+    collection_invitations: list[CollectionInvitation] = Field(default_factory=list)
+    task_list_invitations: list[TaskListInvitation] = Field(default_factory=list)
