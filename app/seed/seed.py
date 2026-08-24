@@ -1,9 +1,10 @@
-from sqlmodel import Session
-
 from copy import deepcopy
 
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session
 
-from app.core.db import engine
+
+from app.core.db.db import engine
 from app.models.seed import LocalSeedCollection
 from app.seed.test_data import (
     test_users,
@@ -16,7 +17,7 @@ from app.seed.test_data import (
     test_collection_invitations,
     test_task_list_invitations,
 )
-from app.services.user_service import create_user
+from app.services.user_service import create_user, delete_user
 from app.services.collection_service import create_collection
 from app.services.task_list_service import create_task_list
 from app.services.task_service import create_task
@@ -33,18 +34,35 @@ from app.services.collection_invitation import create_collection_invitation
 from app.services.task_list_invitation import create_task_list_invitation
 
 # To do:
-# - Seed all test data
-# - Add all seeded data to an object variable
-# - Save this to a file
+# - √ Seed all test data
+# - √ Add all seeded data to an object variable
+# - √ Save this to a file
 # - √ Add it to .gitignore
+#   Turn your seed data objects into one big one to call that as one, rather than loads of separate ones.
+# - separate your services our into singular functions
+#   - create, get, delete
+#   - Get rid of the rest
+#   - Make sure you have an Enum to get your types right - e.g. returning one of User, Collection, etc.
 # - Add in your test data to remove all previous test data by uuid
 # - Add prints to tell you this is done
 # - Ensure all types are created and present in models - this hasn't been done yet
+# - Create a command script with pyproject to run this seed easier
 # - Unit tests
 # - Integration tests
 
 with Session(engine) as session:
     seed_data = LocalSeedCollection(users=[], collections=[])
+
+    # delete_user(UUID("852eac54-4d78-4f97-b311-6218d9ad1210"), session)
+
+    for user in test_users:
+        try:
+            delete_user(user.id, session)
+        except NoResultFound:  # better error?
+            print(f"Couldn't find user to delete pre-seed. id = {user.id}")
+
+    # -- Create separate functions for deletion and creation and call them here --
+
     for user in test_users:
         created_user = create_user(user, session)
         # without deepcopy, future session.refresh(user)'s flush it from memory and you won't find it in seed_data
@@ -87,4 +105,4 @@ with Session(engine) as session:
     with open("seed_data.json", "w") as f:
         f.write(seed_dict)
 
-    # retrieved_user = get_current_user(seed_data.users[0].id, session)
+    # # retrieved_user = get_current_user(seed_data.users[0].id, session)

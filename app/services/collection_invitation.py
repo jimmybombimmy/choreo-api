@@ -1,4 +1,4 @@
-from app.core.db import SessionDep
+from app.core.db.db import SessionDep
 from app.models.collection_invitations import CollectionInvitation
 
 
