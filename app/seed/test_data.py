@@ -1,4 +1,5 @@
 from uuid import UUID
+from collections.abc import Sequence
 
 from app.models.collections import Collection
 from app.models.tasks import Task
@@ -10,7 +11,12 @@ from app.models.collection_task_list_memberships import CollectionTaskListMember
 from app.models.collection_invitations import CollectionInvitation
 from app.models.task_list_invitations import TaskListInvitation
 
-from app.enums.model_enums import MembershipRoles, InvitationStatus
+from app.types.models import ChoreoModel, ChoreoModelDeleteCascade
+
+from app.enums.model_enums import (
+    MembershipRoles,
+    InvitationStatus,
+)
 
 # users and task_lists are double-linked through user_task_list_memberships
 # tasks are inside of task_lists
@@ -432,3 +438,21 @@ test_task_list_invitations: list[TaskListInvitation] = [
         status=InvitationStatus.PENDING,
     ),
 ]
+
+seed_test_data: tuple[Sequence[ChoreoModel], ...] = (
+    test_users,
+    test_collections,
+    test_task_lists,
+    test_tasks,
+    test_user_collection_memberships,
+    test_user_task_list_memberships,
+    test_collection_task_list_memberships,
+    test_collection_invitations,
+    test_task_list_invitations,
+)
+
+seed_deletable_data: tuple[Sequence[ChoreoModelDeleteCascade], ...] = (
+    test_users,
+    test_collections,
+    test_task_lists,
+)

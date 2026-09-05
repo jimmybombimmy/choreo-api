@@ -14,3 +14,21 @@ class InvitationStatus(str, Enum):
     ACCEPTED = "ACCEPTED"
     DECLINED = "DECLINED"
     EXPIRED = "EXPIRED"
+
+
+class TableList(str, Enum):
+    User = "User"
+    Collection = "Collection"
+    TaskList = "TaskList"
+    Task = "Task"
+    UserCollectionMembership = "UserCollectionMembership"
+    UserTaskListMembership = "UserTaskListMembership"
+    CollectionTaskListMembership = "CollectionTaskListMembership"
+    CollectionInvitation = "CollectionInvitation"
+    TaskListInvitation = "TaskListInvitation"
+
+
+class TableListDeleteCascade(str, Enum):
+    User = "User"
+    Collection = "Collection"
+    TaskList = "TaskList"

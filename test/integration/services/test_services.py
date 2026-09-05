@@ -3,20 +3,21 @@ from uuid import UUID
 from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError
 
 from app.seed.test_data import ids
-from app.services.user_service import get_user_by_id
+from app.services.services import get_entry_by_id
+from app.models.users import User
 
 
-def test_existing_user_returned(session_fixture):
-    user = get_user_by_id(ids["users"][0], session_fixture)
+def test_existing_entry_returned(session_fixture):
+    user = get_entry_by_id(ids["users"][0], User, session_fixture)
     print(f"user retrieved: {user}")
 
     assert user != None
 
 
-def test_non_existant_user_returned(session_fixture):
+def test_non_existant_entry_returned(session_fixture):
     random_uuid = UUID("b1901280-2c6a-4991-a94a-6535e37dad5d")
     try:
-        get_user_by_id(random_uuid, session_fixture)
+        get_entry_by_id(random_uuid, User, session_fixture)
         assert False
     except NoResultFound as e:
         assert True
@@ -27,11 +28,12 @@ def test_non_existant_user_returned(session_fixture):
         assert False
 
 
-def test_get_user_throws_dataerror_when_string_sent_as_id(session_fixture):
+def test_get_entry_by_id_throws_dataerror_when_string_sent_as_id(session_fixture):
     incorrect_string_id = "steve"
     try:
-        get_user_by_id(
+        get_entry_by_id(
             incorrect_string_id,  # ty: ignore[invalid-argument-type]
+            User,
             session_fixture,
         )
         assert False
@@ -47,8 +49,9 @@ def test_get_user_throws_dataerror_when_string_sent_as_id(session_fixture):
 def test_get_user_throws_dataerror_when_number_sent_as_id(session_fixture):
     incorrect_num_id = 1234
     try:
-        get_user_by_id(
+        get_entry_by_id(
             incorrect_num_id,  # ty: ignore[invalid-argument-type]
+            User,
             session_fixture,
         )
         assert False
