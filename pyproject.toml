@@ -20,8 +20,15 @@ entrypoint = "app.main:app"
 dev = [
     "pre-commit>=4.6.0",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]
 lint = [
     "ruff>=0.15.21",
     "ty>=0.0.58",
 ]
+
+[tool.coverage.run]
+source = ["app"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

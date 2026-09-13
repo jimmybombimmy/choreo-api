@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.exc import NoResultFound
 
-from app.core.db.db import SessionDep
+from app.core.db import SessionDep
 from app.types.models import ChoreoModel
 
 

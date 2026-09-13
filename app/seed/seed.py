@@ -1,6 +1,6 @@
 from sqlmodel import Session
 
-from app.core.db.db import engine
+from app.core.db import engine
 from app.seed.test_data import seed_test_data, seed_deletable_data
 from app.services.services import create_entry, delete_entry
 
@@ -19,7 +19,6 @@ from app.types.models import ChoreoModel
 # - √ Add in your test data to remove all previous test data by uuid
 # - √ Add prints to tell you this is done
 # - √ Ensure all types are created and present in models - this hasn't been done yet
-# - Create a command script with pyproject to run this seed easier
 # - Unit tests
 # - Integration tests
 
