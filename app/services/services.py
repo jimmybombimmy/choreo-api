@@ -6,6 +6,7 @@ from app.core.db import SessionDep
 from app.types.models import ChoreoModel
 
 
+# add error handling to this
 def create_entry(entry: ChoreoModel, session: SessionDep) -> ChoreoModel:
     session.add(entry)
     session.commit()
