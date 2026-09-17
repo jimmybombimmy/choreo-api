@@ -3,12 +3,24 @@ from uuid import UUID
 from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError
 
 from app.seed.test_data import ids
-from app.services.services import get_entry_by_id
+from app.services.services import create_entry, get_entry_by_id
 from app.models.users import User
+from app.models.collections import Collection
 
 # These tests may need to be improved by creating and tearing down User creation
 # Currently they rely on the db being seeded
 # You could just seed the db though???
+
+
+class Test_Create_Entry:
+    def test_created_entry_returned_what_was_put_in(
+        self, session_fixture, collection_for_creation_fixture
+    ):
+        created_entry = create_entry(collection_for_creation_fixture, session_fixture)
+        assert created_entry == collection_for_creation_fixture
+
+        retrieved_entry = get_entry_by_id(created_entry.id, Collection, session_fixture)
+        assert created_entry == retrieved_entry
 
 
 class Test_Get_Entry_By_ID:
