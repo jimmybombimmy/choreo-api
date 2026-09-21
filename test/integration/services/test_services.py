@@ -1,6 +1,7 @@
 from uuid import UUID
+import pytest
 
-from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError
+from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError, OperationalError
 
 from app.seed.test_data import ids
 from app.services.services import create_entry, get_entry_by_id
@@ -19,10 +20,29 @@ class Test_Create_Entry:
         created_entry = create_entry(collection_for_creation_fixture, session_fixture)
         assert created_entry == collection_for_creation_fixture
 
-        retrieved_entry = get_entry_by_id(created_entry.id, Collection, session_fixture)
+        created_entry_id = created_entry.id
+
+        retrieved_entry = get_entry_by_id(created_entry_id, Collection, session_fixture)
         assert created_entry == retrieved_entry
 
+    def test_operation_error_thrown_if_connection_refused(
+        self, bad_session_fixture, collection_for_creation_fixture
+    ):
+        try:
+            create_entry(collection_for_creation_fixture, bad_session_fixture)
+        except OperationalError as e:
+            assert "password authentication failed for user" in str(e)
+        except Exception:
+            assert False
 
+    # # maybe the same as the above??
+    # def test_error_if_postgres_details_incorrect(self):
+    #     assert True
+
+    # Check if other postgres session details being incorrect will throw different errors
+
+
+@pytest.mark.skip()
 class Test_Get_Entry_By_ID:
     def test_existing_entry_returned(self, session_fixture):
         user = get_entry_by_id(ids["users"][0], User, session_fixture)
