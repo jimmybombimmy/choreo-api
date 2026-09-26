@@ -1,4 +1,5 @@
-from typing import TypeAlias
+from typing import TypeAlias, TypeVar
+
 
 from app.models.collections import Collection
 from app.models.tasks import Task
@@ -21,6 +22,8 @@ ChoreoModel: TypeAlias = (
     | CollectionTaskListMembership
     | TaskListInvitation
 )
+
+ChoreoModelTypeVar = TypeVar("ChoreoModelTypeVar", bound=ChoreoModel)
 
 
 ChoreoModelDeleteCascade = User | Collection | TaskList

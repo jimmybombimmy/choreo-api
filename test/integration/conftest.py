@@ -9,7 +9,8 @@ from sqlmodel import Session
 from app.core.config import settings
 from app.core.db import get_session
 from app.models.collections import Collection
-from app.services.services import delete_entry
+from app.services.services import create_entry, delete_entry
+from app.seed.test_data import ids, test_tasks
 
 
 @pytest.fixture
@@ -42,7 +43,7 @@ def bad_session_fixture():
 
 
 @pytest.fixture
-def collection_for_creation_fixture(session_fixture):
+def entry_for_creation_fixture(session_fixture):
     random_uuid = uuid4()
     test_collection = Collection(
         id=random_uuid,
@@ -54,4 +55,16 @@ def collection_for_creation_fixture(session_fixture):
     try:
         delete_entry(random_uuid, Collection, session_fixture)
     except:
-        print("collection_fixture was unable to delete entry")
+        print("entry_for_creation_fixture was unable to delete entry after test")
+
+
+@pytest.fixture
+def entry_id_for_deletion_fixture(session_fixture):
+    task_id = ids["tasks"][0]
+    test_task = test_tasks[0]
+
+    yield task_id
+    try:
+        create_entry(test_task, session_fixture)
+    except:
+        print("entry_for_deletion_fixture unable to recreate entry after test")
