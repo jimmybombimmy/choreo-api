@@ -1,8 +1,11 @@
 import pytest
 
 from sqlmodel import Session
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.core.db import get_session
+
+from .mocks import test_uuid, fake_entry, MockChoreoModel
 
 obj = object()
 
@@ -18,8 +21,12 @@ class FakeSession:
         self.committed = False
         self.refreshed = None
         self.deleted = None
+        self.got = None
 
     def add(self, entry):
+        if entry.id != test_uuid:
+            raise UnmappedInstanceError(entry, "bad entry")
+
         self.added = entry
 
     def commit(self):
@@ -30,6 +37,11 @@ class FakeSession:
 
     def delete(self, entry):
         self.deleted = entry
+
+    def get(self, model, id):
+        if id == test_uuid:
+            return fake_entry
+        return None
 
     def __enter__(self):
         return obj
@@ -54,3 +66,8 @@ def get_session_mock(monkeypatch):
 @pytest.fixture
 def session_mock():
     return FakeSession()
+
+
+@pytest.fixture
+def mock_choreo_model_type(monkeypatch):
+    monkeypatch.setattr("app.models.users.User", MockChoreoModel)
