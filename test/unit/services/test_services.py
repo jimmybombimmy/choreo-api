@@ -98,7 +98,6 @@ class TestDeleteEntry:
         )
 
         delete_entry(test_uuid, User, session_mock)
-        print(session_mock.deleted)
 
         assert session_mock.deleted == True
         assert session_mock.committed == True
