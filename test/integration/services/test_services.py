@@ -29,13 +29,13 @@ class Test_Create_Entry:
     def test_entry_with_incorrect_type_throws_error(self, session_fixture):
         bad_entry = (
             Task(
-                id=123,  # ty: ignore[invalid-argument-type]
+                id=123,
                 name="Change bed sheets",
                 task_list_id=ids["task_lists"][0],
             ),
         )
         try:
-            create_entry(bad_entry, session_fixture)  # ty: ignore[invalid-argument-type]
+            create_entry(bad_entry, session_fixture)
             assert False, "Bad entry somehow created"
         except UnmappedInstanceError as e:
             assert f"Incorrect data provided when creating entry: {bad_entry}" in str(e)
@@ -49,10 +49,11 @@ class Test_Create_Entry:
             Task(
                 id=random_uuid,
                 name="Change bed sheets",
-            ),  # ty: ignore[missing-argument]
+            ),
+            ignore[missing - argument],
         )
         try:
-            create_entry(bad_entry, session_fixture)  # ty: ignore[invalid-argument-type]
+            create_entry(bad_entry, session_fixture)
             assert False, "Bad entry somehow created"
         except UnmappedInstanceError as e:
             assert f"Incorrect data provided when creating entry: {bad_entry}" in str(e)
@@ -67,11 +68,11 @@ class Test_Create_Entry:
                 id=random_uuid,
                 name="Change bed sheets",
                 task_list_id=ids["task_lists"][0],
-                foo="bar",  # ty: ignore[unknown-argument]
+                foo="bar",
             ),
         )
         try:
-            create_entry(bad_entry, session_fixture)  # ty: ignore[invalid-argument-type]
+            create_entry(bad_entry, session_fixture)
             assert False, "Bad entry somehow created"
         except UnmappedInstanceError as e:
             assert f"Incorrect data provided when creating entry: {bad_entry}" in str(e)
@@ -121,7 +122,7 @@ class Test_Get_Entry_By_ID:
         incorrect_string_id = "steve"
         try:
             get_entry_by_id(
-                incorrect_string_id,  # ty: ignore[invalid-argument-type]
+                incorrect_string_id,
                 User,
                 session_fixture,
             )
@@ -141,7 +142,7 @@ class Test_Get_Entry_By_ID:
         incorrect_num_id = 1234
         try:
             get_entry_by_id(
-                incorrect_num_id,  # ty: ignore[invalid-argument-type]
+                incorrect_num_id,
                 User,
                 session_fixture,
             )

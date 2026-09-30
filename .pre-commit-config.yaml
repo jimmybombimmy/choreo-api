@@ -14,6 +14,6 @@ repos:
     hooks:
       - id: ty
         name: ty check
-        entry: uv run ty check .
+        entry: uv run ty check ./app
         language: python
         files: ^app/

@@ -13,7 +13,7 @@ class TestCreateEntry:
     def test_entry_adds_and_returns_user(self, session_mock):
         entry = FakeModel(id=test_uuid, foo="bar")
 
-        result = create_entry(entry, session_mock)  # ty: ignore[invalid-argument-type]
+        result = create_entry(entry, session_mock)
 
         assert result is entry
         assert session_mock.added is entry
@@ -24,7 +24,7 @@ class TestCreateEntry:
         bad_entry = FakeModel(id=123, foo="bad")
 
         try:
-            create_entry(bad_entry, session_mock)  # ty: ignore[invalid-argument-type]
+            create_entry(bad_entry, session_mock)
             assert False
         except UnmappedInstanceError as e:
             assert "Incorrect data provided when creating entry" in str(e)
