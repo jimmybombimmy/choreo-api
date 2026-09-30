@@ -50,7 +50,6 @@ class Test_Create_Entry:
                 id=random_uuid,
                 name="Change bed sheets",
             ),
-            ignore[missing - argument],
         )
         try:
             create_entry(bad_entry, session_fixture)
