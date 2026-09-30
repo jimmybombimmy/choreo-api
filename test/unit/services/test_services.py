@@ -3,10 +3,10 @@ from uuid import uuid4
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from app.services.services import create_entry, get_entry_by_id
+from app.services.services import create_entry, get_entry_by_id, delete_entry
 from app.models.users import User
 
-from ..mocks import FakeModel, test_uuid
+from ..mocks import FakeModel, test_uuid, mock_get_entry_by_id
 
 
 class TestCreateEntry:
@@ -87,3 +87,37 @@ class TestGetEntryByID:
             assert f"User not found with id: 123" in str(e)
         except Exception:
             assert False
+
+
+class TestDeleteEntry:
+    def test_existing_entry_deletes_user(
+        self, monkeypatch, session_mock, mock_choreo_model_type
+    ):
+        monkeypatch.setattr(
+            "app.services.services.get_entry_by_id", mock_get_entry_by_id
+        )
+
+        delete_entry(test_uuid, User, session_mock)
+        print(session_mock.deleted)
+
+        assert session_mock.deleted == True
+        assert session_mock.committed == True
+
+    def test_bad_entry_throws_error_in_retrieval(
+        self, monkeypatch, session_mock, mock_choreo_model_type
+    ):
+        monkeypatch.setattr(
+            "app.services.services.get_entry_by_id", mock_get_entry_by_id
+        )
+        random_uuid = uuid4()
+
+        try:
+            delete_entry(random_uuid, User, session_mock)
+            assert False
+        except NoResultFound as e:
+            assert f"Model not found with id: {random_uuid}" in str(e)
+        except Exception:
+            assert False
+
+        assert session_mock.deleted == False
+        assert session_mock.committed == False

@@ -22,6 +22,13 @@ def create_entry(entry: ChoreoModelTypeVar, session: SessionDep) -> ChoreoModelT
 def get_entry_by_id(
     entry_id: UUID, Model: type[ChoreoModel], session: SessionDep
 ) -> ChoreoModel:
+    """
+    Gets an entry by its ID and Model
+
+    Errors:
+    - NoResultFound - as below, if entry isn't retrieved
+    - AttributeError - for issues with incorrect models
+    """
     retrieved_entry = session.get(Model, entry_id)
     if retrieved_entry == None:
         raise NoResultFound(f"{Model.__name__} not found with id: {entry_id}")
