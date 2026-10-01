@@ -11,8 +11,10 @@ from app.utils.get_datetime_uk import get_datetime_uk
 class UserTaskListMembership(SQLModel, table=True):
     __tablename__ = "user_task_list_memberships"
 
-    user_id: UUID = Field(foreign_key="users.id", primary_key=True)
-    task_list_id: UUID = Field(foreign_key="task_lists.id", primary_key=True)
+    user_id: UUID = Field(foreign_key="users.id", ondelete="CASCADE", primary_key=True)
+    task_list_id: UUID = Field(
+        foreign_key="task_lists.id", ondelete="CASCADE", primary_key=True
+    )
     role: MembershipRoles = Field(
         default=MembershipRoles.VIEWER,
         sa_column=Column(

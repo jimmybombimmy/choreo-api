@@ -11,8 +11,10 @@ from app.utils.get_datetime_uk import get_datetime_uk
 class UserCollectionMembership(SQLModel, table=True):
     __tablename__ = "user_collection_memberships"
 
-    user_id: UUID = Field(foreign_key="users.id", primary_key=True)
-    collection_id: UUID = Field(foreign_key="collections.id", primary_key=True)
+    user_id: UUID = Field(foreign_key="users.id", ondelete="CASCADE", primary_key=True)
+    collection_id: UUID = Field(
+        foreign_key="collections.id", ondelete="CASCADE", primary_key=True
+    )
     role: MembershipRoles = Field(
         default=MembershipRoles.VIEWER,
         sa_column=Column(

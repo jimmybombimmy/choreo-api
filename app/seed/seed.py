@@ -6,18 +6,22 @@ from app.services.services import create_entry, delete_entry
 
 from app.types.models import ChoreoModel
 
-with Session(engine) as session:
-    print("Deleting any seed entries that exist")
-    for model in seed_deletable_data:
-        model_name = type(model[0]).__name__
-        m: type[ChoreoModel] = type(model[0])
-        for entry in model:
-            delete_entry(entry.id, m, session)
 
-    print("Seeding database")
-    for model in seed_test_data:
-        model_name = type(model[0]).__name__
-        for entry in model:
-            created_entry = create_entry(entry, session)
+def run_seed():
+    with Session(engine) as session:
+        print("Deleting any seed entries that exist")
+        for model in seed_deletable_data:
+            m: type[ChoreoModel] = type(model[0])
+            for entry in model:
+                delete_entry(entry.id, m, session)
 
-    print("Successfully seeded database")
+        print("Seeding database")
+        for model in seed_test_data:
+            for entry in model:
+                create_entry(entry, session)
+
+        print("Successfully seeded database")
+
+
+if __name__ == "__main__":
+    run_seed()
