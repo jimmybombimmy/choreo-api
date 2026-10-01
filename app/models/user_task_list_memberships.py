@@ -5,7 +5,7 @@ from sqlalchemy import DateTime, Enum as SQLEnum
 from sqlmodel import Field, SQLModel, Column
 
 from app.enums.model_enums import MembershipRoles
-from app.utils.get_datetime_bst import get_datetime_bst
+from app.utils.get_datetime_uk import get_datetime_uk
 
 
 class UserTaskListMembership(SQLModel, table=True):
@@ -25,7 +25,7 @@ class UserTaskListMembership(SQLModel, table=True):
             server_default="VIEWER",
         ),
     )
-    created_at: datetime = Field(default_factory=get_datetime_bst)
+    created_at: datetime = Field(default_factory=get_datetime_uk)
     updated_at: datetime | None = Field(
         default=None,
         sa_column=Column(DateTime(timezone=True)),

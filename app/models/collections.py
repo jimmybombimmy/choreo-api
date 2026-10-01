@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import DateTime
 from sqlmodel import Field, Column, SQLModel
 
-from app.utils.get_datetime_bst import get_datetime_bst
+from app.utils.get_datetime_uk import get_datetime_uk
 
 
 class Collection(SQLModel, table=True):
@@ -15,7 +15,7 @@ class Collection(SQLModel, table=True):
     description: str | None = Field(default=None, max_length=140)
     task_type: str | None = Field(default=None, max_length=30)
     created_at: datetime = Field(
-        default_factory=get_datetime_bst, sa_column=Column(DateTime(timezone=True))
+        default_factory=get_datetime_uk, sa_column=Column(DateTime(timezone=True))
     )
     last_completed_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True))
