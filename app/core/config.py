@@ -13,11 +13,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    POSTGRES_SERVER: str
+    POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str = ""
-    POSTGRES_DB: str = ""
+    POSTGRES_USER: str = "user"
+    POSTGRES_PASSWORD: str = "pass"
+    POSTGRES_DB: str = "choreo"
 
     @computed_field  # type: ignore[prop-decorator]
     @property
