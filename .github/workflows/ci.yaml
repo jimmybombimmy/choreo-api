@@ -36,5 +36,5 @@ jobs:
       - name: Run pre-commit linting
         run: uv run pre-commit run --all-file
 
-      - name: Run tests
-        run: uv run pytest
+      - name: Run unit tests
+        run: uv run pytest test/unit --cov=app --cov-report=term-missing
