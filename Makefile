@@ -1,5 +1,15 @@
-# Todo:
+hw:
+	@echo "Hello Choreo World!"
 
-# unit test coverage - uv run pytest test/unit --cov=app --cov-report=term-missing
+seed-db:
+	uv run -m app.seed.seed
 
-# Integration test - desc: run integration tests only when marker provided and seed every time
+test:
+	uv run pytest test/
+
+test-unit:
+	uv run pytest test/unit --cov=app --cov-report=term-missing
+
+test-int:
+	uv run -m app.seed.seed
+	uv run pytest -m integration
