@@ -34,6 +34,7 @@ class Test_Create_Entry:
                 task_list_id=ids["task_lists"][0],
             ),
         )
+
         try:
             create_entry(bad_entry, session_fixture)
             assert False, "Bad entry somehow created"
@@ -51,6 +52,7 @@ class Test_Create_Entry:
                 name="Change bed sheets",
             ),
         )
+
         try:
             create_entry(bad_entry, session_fixture)
             assert False, "Bad entry somehow created"
@@ -89,6 +91,7 @@ class Test_Create_Entry:
 
         try:
             create_entry(entry_for_creation_fixture, bad_session_fixture)
+            assert False
         except OperationalError as e:
             assert "password authentication failed for user" in str(e)
         except Exception:
@@ -109,9 +112,7 @@ class Test_Get_Entry_By_ID:
             assert False
         except NoResultFound as e:
             assert True
-
-            if "User not found" not in str(e):
-                assert False
+            assert "User not found" in str(e)
         except Exception:
             assert False
 
@@ -128,12 +129,9 @@ class Test_Get_Entry_By_ID:
             assert False
         except DataError as e:
             assert True
-
-            if (
-                f'invalid input syntax for type uuid: "{incorrect_string_id}"'
-                not in str(e)
-            ):
-                assert False
+            assert (
+                f'invalid input syntax for type uuid: "{incorrect_string_id}"' in str(e)
+            )
         except Exception:
             assert False
 
@@ -148,9 +146,7 @@ class Test_Get_Entry_By_ID:
             assert False
         except ProgrammingError as e:
             assert True
-
-            if f"cannot cast type integer to uuid" not in str(e):
-                assert False
+            assert f"cannot cast type integer to uuid" in str(e)
         except Exception:
             assert False
 
