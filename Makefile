@@ -5,7 +5,7 @@ seed-db:
 	uv run -m app.seed.seed
 
 test:
-	uv run pyest
+	uv run pytest test/
 
 test-unit:
 	uv run pytest test/unit --cov=app --cov-report=term-missing
