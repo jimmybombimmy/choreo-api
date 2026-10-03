@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 import pytest
 
 from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError, OperationalError
@@ -80,17 +80,23 @@ class Test_Create_Entry:
         except Exception:
             assert False, "Incorrect exception given"
 
-    def test_operation_error_thrown_if_connection_refused(
-        self, bad_session_fixture, entry_for_creation_fixture
-    ):
+    @pytest.mark.only
+    def test_operation_error_thrown_if_connection_refused(self, bad_session_fixture):
         """
         All connection errors due to bad postgres info are "OperationalErrors"
 
         Any "TypeError"'s are caught when the PostgresDsn.build happens (in config)
         """
 
+        random_uuid = uuid4()
+        test_collection = Collection(
+            id=random_uuid,
+            name="test",
+            description="test",
+        )
+
         try:
-            create_entry(entry_for_creation_fixture, bad_session_fixture)
+            create_entry(test_collection, bad_session_fixture)
             assert False
         except OperationalError as e:
             assert "password authentication failed for user" in str(e)
