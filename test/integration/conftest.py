@@ -7,10 +7,10 @@ from sqlalchemy import create_engine
 from sqlmodel import Session
 
 from app.core.config import settings
-from app.core.db import get_session
+from app.db.base import get_session
 from app.models.collections import Collection
 from app.services.services import create_entry, delete_entry
-from app.seed.test_data import ids, test_tasks
+from app.scripts.seed.test_data import ids, test_tasks
 
 
 @pytest.fixture

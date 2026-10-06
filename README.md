@@ -43,3 +43,29 @@ To run these hooks inside of venv all files and see the results:
 ```bash
 uv run pre-commit run --all-file
 ```
+
+## API Structure
+
+Due to this being a relatively small application, this follows a **Layered architecture** approach.
+
+Below outlines the structure:
+
+```
+api/       → How the outside world talks to the application
+core/      → Central application concerns
+db/        → How storage is connected/configured
+enums/     → Reusable enumerations
+models/    → What gets stored
+schemas/   → What goes over the API
+seed/      → Development/test data
+services/  → What the application does
+types/     → Reusable type definitions
+utils/     → Generic helpers
+```
+
+Ref:
+
+- [You Don’t Need a Framework — You Just Need This FastAPI Structure](https://medium.com/@hadiyolworld007/you-dont-need-a-framework-you-just-need-this-fastapi-structure-e0b1f24c599f)
+  - Mostly followed, with minor changes
+- [full-stack-fastapi-template (GitHub)](https://github.com/fastapi/full-stack-fastapi-template)
+  - Good example for FastAPI code. Not followed very heavily

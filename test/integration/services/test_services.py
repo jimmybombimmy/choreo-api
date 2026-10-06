@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.exc import DataError, NoResultFound, ProgrammingError, OperationalError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from app.seed.test_data import ids
+from app.scripts.seed.test_data import ids
 from app.services.services import create_entry, get_entry_by_id, delete_entry
 from app.models.users import User
 from app.models.collections import Collection
