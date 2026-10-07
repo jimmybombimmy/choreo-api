@@ -46,6 +46,20 @@ uv run pre-commit run --all-file
 
 ## API Structure
 
+To call endpoints in our API, you will need the suffix of `/api/v1/<route>/xxx`.
+
+For example, you can retrieve all `task_types` locally by running:
+
+```bash
+curl http://localhost:8000/api/v1/task-types/
+```
+
+Change port, or anything else for further environments, as needed.
+
+**Note:** As the app evolves this might not be so simple
+
+### Layered Architecture
+
 Due to this being a relatively small application, this follows a **Layered architecture** approach.
 
 Below outlines the structure:
@@ -57,7 +71,7 @@ db/        → How storage is connected/configured
 enums/     → Reusable enumerations
 models/    → What gets stored
 schemas/   → What goes over the API
-seed/      → Development/test data
+scripts/   → Development/test scripts
 services/  → What the application does
 types/     → Reusable type definitions
 utils/     → Generic helpers
