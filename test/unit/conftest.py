@@ -3,7 +3,7 @@ import pytest
 from sqlmodel import Session
 
 
-from app.core.db import get_session
+from app.db.base import get_session
 
 from .mocks import (
     MockChoreoModel,

@@ -1,8 +1,8 @@
 from sqlmodel import Session
 from sqlalchemy.exc import NoResultFound
 
-from app.core.db import engine
-from app.seed.test_data import seed_test_data, seed_deletable_data
+from app.db.base import engine
+from app.scripts.seed.test_data import seed_test_data, seed_deletable_data
 from app.services.services import create_entry, delete_entry
 from app.types.models import ChoreoModel
 

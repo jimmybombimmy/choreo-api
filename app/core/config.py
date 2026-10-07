@@ -13,6 +13,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    API_V1_STR: str = "/api/v1"
+
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "user"

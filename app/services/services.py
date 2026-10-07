@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from app.core.db import SessionDep
+from app.db.base import SessionDep
 from app.types.models import ChoreoModel, ChoreoModelTypeVar
 
 
