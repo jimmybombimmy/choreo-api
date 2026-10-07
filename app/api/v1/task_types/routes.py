@@ -4,11 +4,7 @@ Get all, Get one, Add one, Amend, Delete"""
 from fastapi import APIRouter, Path
 from typing import Annotated
 
-router = APIRouter(
-    prefix="/task-types",
-    tags=["task_types"],
-    responses={404: {"description": "Not found"}},
-)
+router = APIRouter(prefix="/task-types", tags=["task_types"])
 
 
 @router.get("/")
