@@ -57,7 +57,7 @@ db/        → How storage is connected/configured
 enums/     → Reusable enumerations
 models/    → What gets stored
 schemas/   → What goes over the API
-seed/      → Development/test data
+scripts/   → Development/test scripts
 services/  → What the application does
 types/     → Reusable type definitions
 utils/     → Generic helpers

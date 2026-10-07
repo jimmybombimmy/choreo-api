@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from .features.task_types.router import router as task_types_router
+from app.api.v1.task_types.router import router as task_types_router
 
 app = FastAPI()
 
