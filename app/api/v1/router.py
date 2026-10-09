@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .users.routes import router as users_router
 from .task_types.routes import router as task_types_router
 
 api_router = APIRouter(
@@ -7,4 +8,6 @@ api_router = APIRouter(
     tags=["v1"],
     responses={404: {"description": "Not found"}},
 )
+
+api_router.include_router(users_router)
 api_router.include_router(task_types_router)
