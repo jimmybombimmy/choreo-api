@@ -3,11 +3,15 @@ from collections.abc import Sequence
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from sqlmodel import select
 
 from app.db.base import SessionDep
 from app.types.models import ChoreoModel, ChoreoModelTypeVar
 from app.types.schemas import ChoreoSchema
+
+
+def execute_statement(session: SessionDep, statement) -> Sequence[ChoreoSchema]:
+    entries = session.exec(statement).all()
+    return entries
 
 
 def create_entry(entry: ChoreoModelTypeVar, session: SessionDep) -> ChoreoModelTypeVar:
@@ -20,14 +24,6 @@ def create_entry(entry: ChoreoModelTypeVar, session: SessionDep) -> ChoreoModelT
         raise UnmappedInstanceError(
             entry, f"Incorrect data provided when creating entry: {entry}"
         )
-
-
-def get_all_entries(
-    Model: type[ChoreoModel], session: SessionDep
-) -> Sequence[ChoreoSchema]:
-    statement = select(Model)
-    entries = session.exec(statement).all()
-    return entries
 
 
 def get_entry_by_id(
