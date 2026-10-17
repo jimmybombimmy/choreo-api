@@ -9,9 +9,16 @@ from app.types.models import ChoreoModel, ChoreoModelTypeVar
 from app.types.schemas import ChoreoSchema
 
 
-def execute_statement(session: SessionDep, statement) -> Sequence[ChoreoSchema]:
-    entries = session.exec(statement).all()
-    return entries
+# To do: Create proper error handling
+def execute_statement(
+    session: SessionDep, statement
+) -> Sequence[ChoreoSchema] | Sequence[None]:
+    try:
+        entries = session.exec(statement).all()
+        return entries
+    except Exception as e:
+        print(f"Handle this error better: {e}")
+        return []
 
 
 def create_entry(entry: ChoreoModelTypeVar, session: SessionDep) -> ChoreoModelTypeVar:
