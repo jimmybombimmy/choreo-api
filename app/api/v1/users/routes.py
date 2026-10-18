@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter
 
+from app.api.v1.pagination import build_paginated_response
 from app.db.base import SessionDep
 from app.enums.query_enums import UnaryExpressionStrings
 from app.models.users import User
@@ -33,6 +34,10 @@ def get_all_users(
     filter: UserFilter = "created_at",
     order: Order = UnaryExpressionStrings.asc,
 ) -> Sequence[UserOut] | Sequence[None]:
+
     statement = build_get_all_entries_query(User, offset, limit, filter, order)
     entries = execute_statement(session, statement)
-    return entries
+
+    return build_paginated_response(
+        "users", offset, limit, filter, order.value, entries
+    )

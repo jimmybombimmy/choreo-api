@@ -1,16 +1,22 @@
 import pytest
 from uuid import uuid4
+from operator import attrgetter
 
 from pydantic import PostgresDsn
 
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
-from app.core.config import settings
 from app.db.base import get_session
 from app.models.collections import Collection
 from app.services.services import create_entry, delete_entry
 from app.scripts.seed.test_data import ids, test_tasks
+
+from app.core.config import settings
+
+POSTGRES_PASSWORD, POSTGRES_SERVER, POSTGRES_PORT, POSTGRES_DB = attrgetter(
+    "POSTGRES_PASSWORD", "POSTGRES_SERVER", "POSTGRES_PORT", "POSTGRES_DB"
+)(settings)
 
 
 @pytest.fixture
@@ -23,10 +29,10 @@ bad_engine = create_engine(
         PostgresDsn.build(
             scheme="postgresql",
             username="bad_user",
-            password=settings.POSTGRES_PASSWORD,
-            host=settings.POSTGRES_SERVER,
-            port=settings.POSTGRES_PORT,
-            path=settings.POSTGRES_DB,
+            password=POSTGRES_PASSWORD,
+            host=POSTGRES_SERVER,
+            port=POSTGRES_PORT,
+            path=POSTGRES_DB,
         )
     )
 )

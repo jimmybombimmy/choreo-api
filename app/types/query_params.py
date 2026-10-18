@@ -5,7 +5,10 @@ from app.enums.query_enums import UnaryExpressionStrings
 
 Offset = Annotated[int, Query(ge=0)]
 Limit = Annotated[int, Query(ge=1, le=100)]
-Order = Annotated[UnaryExpressionStrings, Query()]
+Order = Annotated[
+    UnaryExpressionStrings,
+    Query(),
+]
 
 UserSchemaFilterableFields = Literal[
     "id",
