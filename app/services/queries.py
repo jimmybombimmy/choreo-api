@@ -23,7 +23,7 @@ def build_get_all_entries_query(
     if limit < 1:
         raise ValueError("limit must be positive")
 
-    if filter not in model.model_fields:
+    if filter not in model.model_fields.keys():
         raise ValueError(f"Invalid filter field: {filter}")
     filter_element: InstrumentedAttribute = getattr(model, filter)
 

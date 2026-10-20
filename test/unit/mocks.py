@@ -1,14 +1,18 @@
 from typing import TypeAlias
-from uuid import UUID
+from uuid import UUID, uuid4
+from datetime import datetime
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
+from sqlmodel import SQLModel, Field
 
 
-class FakeModel:
-    def __init__(self, id, foo):
-        self.id = id
-        self.foo = foo
+class FakeModel(SQLModel, table=True):
+    __tablename__ = "fake_model"
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    foo: str = Field(max_length=30)
+    created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
 
 
 test_uuid = UUID("e97943d1-b1c1-4ab6-898a-c2344a6b5b1a")

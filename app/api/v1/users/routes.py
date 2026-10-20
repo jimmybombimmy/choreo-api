@@ -16,10 +16,10 @@ router = APIRouter(prefix="/users", tags=["users"])
 """
 To do:
 - √√√Get users by offset and limit
-- √√√Give options for filtering
-    - Currently it's just created_at and asc, this should be default
+- Give options for filtering
+    - √√√Currently it's just created_at and asc, this should be default
     - Ensure that there's proper error handling for querying an incorrect column
-- Ensure returning object also returns query information
+- √√√Ensure returning object also returns query information
     - E.g. an entries obj inside with offset, limit, etc. after.
 - Unit tests
 - Integration tests

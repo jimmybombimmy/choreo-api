@@ -1,4 +1,5 @@
 from uuid import uuid4
+from datetime import datetime
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -40,6 +41,7 @@ class TestGetEntryByID:
 
         assert entry.id == test_uuid
         assert entry.foo == "bar"
+        assert entry.created_at == datetime(2020, 5, 17)
 
     def test_providing_incorrect_id_throws_error(
         self, session_mock, mock_choreo_model_type
