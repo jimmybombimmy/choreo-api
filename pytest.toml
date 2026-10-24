@@ -3,4 +3,4 @@ markers = [
     "integration: For integration tests only",
 ]
 
-addopts = ["-s", "-m not integration"]
+addopts = ["-s", "-rA", "-m not integration"]
