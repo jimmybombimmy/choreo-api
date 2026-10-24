@@ -5,30 +5,6 @@ from app.services.queries import build_get_all_entries_query
 
 from ..mocks import FakeModel, UnacceptableModel
 
-# To do
-# - Create mocks
-
-# Passing tests
-# - √ All default values
-# - √ offset > 0
-# - √ limit > 1
-# - √ filter by non-default
-# - √ order by something else
-# - √ A variety of filters
-
-# Failing Tests
-# - √ offset < 0
-# - √ offset non-number
-# - √ limit == 0
-# - √ limit < 0
-# - √ limit non-number
-# - √ filter not a field in model
-# - √ filter non-string
-# - √ order is not a correct string
-# - √ order is non-string
-# - √ model isn't of type ChoreoModel
-# - missing params
-
 
 def build_expected_query_strings(filter, order):
     """
@@ -212,20 +188,75 @@ class TestBuildGetAllEntriesQuery:
             except Exception as e:
                 assert False, f"Incorrect exception raised {e}"
 
-        # missing_params_cases = [
-        #     pytest.param(
-        #         {**build_get_all_entries_query_default_params, "model": FakeModel},
-        #         ValueError,
-        #         "offset must be non-negative integer",
-        #         id="offset < 0",
-        #     ),
-        # ]
+        missing_params_cases = [
+            pytest.param(
+                {**build_get_all_entries_query_default_params},
+                "build_get_all_entries_query() missing 1 required positional argument: 'model'",
+                id="no 'model'",
+            ),
+            pytest.param(
+                {
+                    "model": FakeModel,
+                    "limit": 50,
+                    "filter": "created_at",
+                    "order": "asc",
+                },
+                "build_get_all_entries_query() missing 1 required positional argument: 'offset'",
+                id="no 'offset'",
+            ),
+            pytest.param(
+                {
+                    "model": FakeModel,
+                    "offset": 0,
+                    "filter": "created_at",
+                    "order": "asc",
+                },
+                "build_get_all_entries_query() missing 1 required positional argument: 'limit'",
+                id="no 'limit'",
+            ),
+            pytest.param(
+                {
+                    "model": FakeModel,
+                    "offset": 0,
+                    "limit": 50,
+                    "order": "asc",
+                },
+                "build_get_all_entries_query() missing 1 required positional argument: 'filter'",
+                id="no 'filter'",
+            ),
+            pytest.param(
+                {
+                    "model": FakeModel,
+                    "offset": 0,
+                    "limit": 50,
+                    "filter": "created_at",
+                },
+                "build_get_all_entries_query() missing 1 required positional argument: 'order'",
+                id="no 'order'",
+            ),
+            pytest.param(
+                {
+                    "model": FakeModel,
+                    "offset": 0,
+                    "limit": 50,
+                },
+                "build_get_all_entries_query() missing 2 required positional arguments: 'filter' and 'order'",
+                id="multiple missing params",
+            ),
+            pytest.param(
+                {},
+                "build_get_all_entries_query() missing 5 required positional arguments: 'model', 'offset', 'limit', 'filter', and 'order'",
+                id="no params",
+            ),
+        ]
 
-        # @pytest.mark.parametrize("vals,Err,err_msg", missing_params_cases)
-        # def test_missing_params_throws_error(self, vals):
-        #     print("this")
-        #     model, offset, limit, filter, order = itemgetter(
-        #         "model", "offset", "limit", "filter", "order"
-        #     )(vals)
+        @pytest.mark.parametrize("vals,err_msg", missing_params_cases)
+        def test_missing_params_throws_error(self, vals, err_msg):
 
-        # build_get_all_entries_query(model, offset, limit, filter, order)
+            try:
+                build_get_all_entries_query(**vals)
+                assert False
+            except TypeError as e:
+                assert err_msg in str(e)
+            except Exception as e:
+                assert False, f"Incorrect exception raised {e}"
