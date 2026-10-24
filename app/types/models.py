@@ -10,6 +10,7 @@ from app.models.user_task_list_memberships import UserTaskListMembership
 from app.models.collection_task_list_memberships import CollectionTaskListMembership
 from app.models.collection_invitations import CollectionInvitation
 from app.models.task_list_invitations import TaskListInvitation
+from test.unit.mocks import FakeModel
 
 ChoreoModel: TypeAlias = (
     User
@@ -21,6 +22,7 @@ ChoreoModel: TypeAlias = (
     | CollectionInvitation
     | CollectionTaskListMembership
     | TaskListInvitation
+    | FakeModel  # Unit testing only
 )
 
 ChoreoModelTypeVar = TypeVar("ChoreoModelTypeVar", bound=ChoreoModel)

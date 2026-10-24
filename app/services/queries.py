@@ -17,6 +17,10 @@ def build_get_all_entries_query(
     filter: str,
     order: UnaryExpressionStrings,
 ):
+
+    if not isinstance(model, type) or not issubclass(model, ChoreoModel):
+        raise TypeError("model must be a ChoreoModel class")
+
     # These errors should never happen as long as Annotations are filtered correctly
     # Extract this logic into another function or OOP is
     if type(offset) is not int:
@@ -31,6 +35,7 @@ def build_get_all_entries_query(
 
     if filter not in model.model_fields:
         raise ValueError(f"Invalid filter field: {filter}")
+
     filter_element: InstrumentedAttribute = getattr(model, filter)
 
     order_element: Callable[[], UnaryExpression] = getattr(filter_element, order)

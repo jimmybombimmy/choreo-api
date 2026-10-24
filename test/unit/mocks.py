@@ -22,6 +22,16 @@ fake_entry = FakeModel(id=test_uuid, foo="bar")
 MockChoreoModel: TypeAlias = FakeModel
 
 
+# Unlike FakeModel, this isn't in the ChoreoModel TypeAlias
+# so this will throw errors for model
+class UnacceptableModel(SQLModel, table=True):
+    __tablename__ = "unacceptable_model"
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    foo: str = Field(max_length=30)
+    created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
+
+
 def mock_get_entry_by_id(entry_id, _Model, _session):
     if entry_id == test_uuid:
         return fake_entry
