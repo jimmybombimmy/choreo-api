@@ -1,6 +1,7 @@
 import pytest
 from operator import itemgetter
 
+from app.core.errors import error_builder
 from app.services.queries import build_get_all_entries_query
 
 from ..mocks import FakeModel, UnacceptableModel
@@ -73,7 +74,7 @@ class TestBuildGetAllEntriesQuery:
         ]
 
         @pytest.mark.parametrize("vals", non_default_params_cases)
-        def test_querying_all_returns_valid_query_with_non_default_value(self, vals):
+        def test_querying_by_non_default_values_returns_valid_query(self, vals):
             offset, limit, filter, order = itemgetter(
                 "offset", "limit", "filter", "order"
             )(vals)
@@ -95,49 +96,70 @@ class TestBuildGetAllEntriesQuery:
             pytest.param(
                 {**build_get_all_entries_query_default_params, "offset": -1},
                 ValueError,
-                "offset must be non-negative integer",
+                error_builder(ValueError, "offset", -1, "non-negative integer"),
                 id="offset < 0",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "offset": "one"},
                 TypeError,
-                "offset must be non-negative integer",
+                error_builder(TypeError, "offset", "one", "non-negative integer"),
                 id="offset == str",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "offset": True},
                 TypeError,
-                "offset must be non-negative integer",
+                error_builder(TypeError, "offset", True, "non-negative integer"),
                 id="offset == bool",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "limit": 0},
                 ValueError,
-                "limit must be positive integer",
+                error_builder(ValueError, "limit", 0, "positive integer"),
                 id="limit == 0",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "limit": -5},
                 ValueError,
-                "limit must be positive integer",
+                error_builder(ValueError, "limit", -5, "positive integer"),
                 id="limit == -5",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "limit": False},
                 TypeError,
-                "limit must be positive integer",
+                error_builder(TypeError, "limit", False, "positive integer"),
                 id="limit == bool",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "filter": "bad_field"},
                 ValueError,
-                "Invalid filter field: bad_field",
+                error_builder(
+                    ValueError,
+                    "filter",
+                    "bad_field",
+                    f"valid attribute of {FakeModel.__name__}",
+                ),
                 id="filter not in model",
+            ),
+            pytest.param(
+                {**build_get_all_entries_query_default_params, "filter": 123},
+                ValueError,
+                error_builder(
+                    ValueError,
+                    "filter",
+                    123,
+                    f"valid attribute of {FakeModel.__name__}",
+                ),
+                id="filter == num",
             ),
             pytest.param(
                 {**build_get_all_entries_query_default_params, "filter": False},
                 ValueError,
-                "Invalid filter field: False",
+                error_builder(
+                    ValueError,
+                    "filter",
+                    False,
+                    f"valid attribute of {FakeModel.__name__}",
+                ),
                 id="filter == bool",
             ),
             pytest.param(
@@ -149,13 +171,18 @@ class TestBuildGetAllEntriesQuery:
             pytest.param(
                 {**build_get_all_entries_query_default_params, "order": 123},
                 TypeError,
-                "attribute name must be string, not 'int'",
+                error_builder(
+                    TypeError,
+                    "order",
+                    123,
+                    "valid ordering string. Accepted values: 'asc', 'desc', 'disctinct', 'nulls_first', 'nulls_last'",
+                ),
                 id="order != str",
             ),
         ]
 
-        @pytest.mark.parametrize("vals,Err,err_msg", error_params_cases)
-        def test_bad_args_raises_error(self, vals, Err, err_msg):
+        @pytest.mark.parametrize("vals,Err,err_expected", error_params_cases)
+        def test_bad_args_raises_error(self, vals, Err, err_expected):
             offset, limit, filter, order = itemgetter(
                 "offset", "limit", "filter", "order"
             )(vals)
@@ -165,7 +192,7 @@ class TestBuildGetAllEntriesQuery:
                 assert False, "Bad value did not throw error"
 
             except Err as e:
-                assert err_msg in str(e)
+                assert str(err_expected) in str(e)
 
             except Exception as e:
                 assert False, f"Incorrect exception raised {e}"
@@ -250,13 +277,13 @@ class TestBuildGetAllEntriesQuery:
             ),
         ]
 
-        @pytest.mark.parametrize("vals,err_msg", missing_params_cases)
-        def test_missing_params_throws_error(self, vals, err_msg):
+        @pytest.mark.parametrize("vals,err_expected", missing_params_cases)
+        def test_missing_params_raises_error(self, vals, err_expected):
 
             try:
                 build_get_all_entries_query(**vals)
                 assert False
             except TypeError as e:
-                assert err_msg in str(e)
+                assert err_expected in str(e)
             except Exception as e:
                 assert False, f"Incorrect exception raised {e}"
