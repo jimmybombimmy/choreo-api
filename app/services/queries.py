@@ -10,20 +10,12 @@ from app.enums.query_enums import UnaryExpressionStrings
 from app.types.query_params import Offset, Limit
 
 
-# Attribute Error? https://docs.python.org/3/builtins/functions.html#getattr
-def build_get_all_entries_query(
-    model: type[ChoreoModel],
-    offset: Offset,
-    limit: Limit,
-    filter: str,
-    order: UnaryExpressionStrings,
-):
-
+def validate_model(model: type[ChoreoModel]) -> None:
     if not isinstance(model, type) or not issubclass(model, ChoreoModel):
-        raise TypeError("model must be a ChoreoModel class")
+        raise error_builder(TypeError, "model", model, "ChoreoModel class")
 
-    # These errors should never happen as long as Annotations are filtered correctly
-    # Extract this logic into another function or OOP is
+
+def validate_pagination(offset: Offset, limit: Limit) -> None:
     if type(offset) is not int:
         raise error_builder(TypeError, "offset", offset, "non-negative integer")
     if type(limit) is not int:
@@ -34,6 +26,8 @@ def build_get_all_entries_query(
     if limit < 1:
         raise error_builder(ValueError, "limit", limit, "positive integer")
 
+
+def validate_filter(model: type[ChoreoModel], filter: str) -> None:
     if filter not in model.model_fields:
         raise error_builder(
             ValueError,
@@ -41,6 +35,19 @@ def build_get_all_entries_query(
             filter,
             f"valid attribute of {model.__name__}",
         )
+
+
+def build_get_all_entries_query(
+    model: type[ChoreoModel],
+    offset: Offset,
+    limit: Limit,
+    filter: str,
+    order: UnaryExpressionStrings,
+):
+
+    validate_model(model)
+    validate_pagination(offset, limit)
+    validate_filter(model, filter)
 
     filter_element: InstrumentedAttribute = getattr(model, filter)
 

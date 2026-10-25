@@ -210,7 +210,11 @@ class TestBuildGetAllEntriesQuery:
                 assert False, ""
 
             except TypeError as e:
-                assert "model must be a ChoreoModel class" in str(e)
+                assert str(
+                    error_builder(
+                        TypeError, "model", UnacceptableModel, "ChoreoModel class"
+                    )
+                ) in str(e)
 
             except Exception as e:
                 assert False, f"Incorrect exception raised {e}"
