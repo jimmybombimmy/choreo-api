@@ -29,7 +29,7 @@ lint = [
 
 [tool.coverage.run]
 source = ["app"]
-omit = ["**/__init__.py", "./app/seed/**"]
+omit = ["**/__init__.py", "./app/scripts/seed/**"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
