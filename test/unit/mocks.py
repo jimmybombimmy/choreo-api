@@ -15,6 +15,18 @@ class FakeModel(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
 
 
+fake_model_ids = [
+    UUID("ee7f81eb-97c3-45cd-9d21-52900ddcbb34"),
+    UUID("35af15f3-549b-4d5f-8cbb-822d86357359"),
+    UUID("da28bad6-9058-428f-bcb6-d8c0c466bb4b"),
+]
+
+fake_model_all_entries: list[FakeModel] = [
+    FakeModel(id=fake_model_ids[0], foo="bar"),
+    FakeModel(id=fake_model_ids[1], foo="bar"),
+    FakeModel(id=fake_model_ids[2], foo="bar"),
+]
+
 test_uuid = UUID("e97943d1-b1c1-4ab6-898a-c2344a6b5b1a")
 
 fake_entry = FakeModel(id=test_uuid, foo="bar")
@@ -46,6 +58,14 @@ def blank_object_mock():
     return obj
 
 
+class FakeExec:
+    def __init__(self, statement):
+        self.statement = statement
+
+    def all(self):
+        return fake_model_all_entries
+
+
 class FakeSession:
     def __init__(self):
         self.added = None
@@ -53,6 +73,7 @@ class FakeSession:
         self.refreshed = None
         self.deleted = False
         self.got = None
+        self.execced = False
 
     def add(self, entry):
         if entry.id != test_uuid:
@@ -76,6 +97,11 @@ class FakeSession:
         if id == test_uuid:
             return fake_entry
         return None
+
+    def exec(self, statement):
+        self.execced = True
+
+        return FakeExec(statement)
 
     def __enter__(self):
         return obj

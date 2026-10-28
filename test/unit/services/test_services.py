@@ -4,10 +4,26 @@ from datetime import datetime
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from app.services.services import create_entry, get_entry_by_id, delete_entry
+from app.services.services import (
+    execute_statement,
+    create_entry,
+    get_entry_by_id,
+    delete_entry,
+)
 from app.models.users import User
 
-from ..mocks import FakeModel, test_uuid, mock_get_entry_by_id
+from ..mocks import FakeModel, test_uuid, mock_get_entry_by_id, fake_model_all_entries
+
+
+class TestExecuteStatement:
+    def test_correct_statement_retrieves_all_entries(self, session_mock):
+        statement = """SELECT fakemodel.id, fakemodel.foo, fakemodel.created_at
+        FROM fakemodels"""
+
+        entries = execute_statement(session_mock, statement)
+
+        assert session_mock.execced == True
+        assert entries == fake_model_all_entries
 
 
 class TestCreateEntry:

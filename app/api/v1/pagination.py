@@ -26,11 +26,11 @@ def build_paginated_response(model_name, offset, limit, filter, order, entries):
         return f"{prev_base_url}&offset={offset - limit}"
 
     obj = {
-        "count": count,
+        "count": str(count),
         "next": get_next_url(),
         "previous": get_previous_url(),
-        "offset": offset,
-        "order": order,
+        "offset": str(offset),
+        "order": str(order),
         "filter": filter,
         "results": entries,
     }

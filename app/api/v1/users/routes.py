@@ -22,7 +22,13 @@ To do:
 - √√√Ensure returning object also returns query information
     - E.g. an entries obj inside with offset, limit, etc. after.
 - Unit tests
+    - √√√build_get_all_entries_query
+    - execute_statement
+    - build_paginated_response
 - Integration tests
+- Figure out why build_paginated_response doesn't work and fix
+- Find a way to make sure this returns a 200 as well
+- + error codes too
 """
 
 
@@ -38,6 +44,9 @@ def get_all_users(
     statement = build_get_all_entries_query(User, offset, limit, filter, order)
     entries = execute_statement(session, statement)
 
+    return entries
+
+    # fix this
     return build_paginated_response(
         "users", offset, limit, filter, order.value, entries
     )

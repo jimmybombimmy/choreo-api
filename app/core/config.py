@@ -8,6 +8,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
+        coerce_numbers_to_str=False,
     )
 
     API_V1_STR: str = "/api/v1"

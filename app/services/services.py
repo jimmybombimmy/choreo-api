@@ -1,20 +1,24 @@
 from uuid import UUID
 from collections.abc import Sequence
+from typing import Any, TypeVar
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
+from sqlmodel.sql.expression import SelectOfScalar
 
 from app.db.base import SessionDep
 from app.types.models import ChoreoModel, ChoreoModelTypeVar
 from app.types.schemas import ChoreoSchema
 
+_TSelectParam = TypeVar("_TSelectParam", bound=Any)
+
 
 # To do: Create proper error handling
 def execute_statement(
-    session: SessionDep, statement
+    session: SessionDep, statement: SelectOfScalar
 ) -> Sequence[ChoreoSchema] | Sequence[None]:
     try:
-        entries = session.exec(statement).all()
+        entries: Sequence[ChoreoSchema] | Sequence[None] = session.exec(statement).all()
         return entries
     except Exception as e:
         print(f"Handle this error better: {e}")

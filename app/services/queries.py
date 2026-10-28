@@ -3,6 +3,7 @@ from collections.abc import Callable
 from sqlalchemy import UnaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import select
+from sqlmodel.sql.expression import SelectOfScalar
 
 from app.core.errors import error_builder
 from app.types.models import ChoreoModel
@@ -43,7 +44,7 @@ def build_get_all_entries_query(
     limit: Limit,
     filter: str,
     order: UnaryExpressionStrings,
-):
+) -> SelectOfScalar:
 
     validate_model(model)
     validate_pagination(offset, limit)
