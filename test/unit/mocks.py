@@ -2,7 +2,7 @@ from typing import TypeAlias
 from uuid import UUID, uuid4
 from datetime import datetime
 
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, ProgrammingError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from sqlmodel import SQLModel, Field
 
@@ -63,7 +63,11 @@ class FakeExec:
         self.statement = statement
 
     def all(self):
-        return fake_model_all_entries
+
+        if "fakemodel" in self.statement:
+            return fake_model_all_entries
+
+        return []
 
 
 class FakeSession:
@@ -99,6 +103,19 @@ class FakeSession:
         return None
 
     def exec(self, statement):
+        statement = str(statement)
+        # Lazy way of testing if table doesn't exist
+        if "badtable" in statement:
+            raise ProgrammingError(
+                statement,
+                {},
+                Exception("relation does not exist"),
+            )
+
+        # Lazy way of testing if SQL query is wrong
+        if not statement.startswith("SELECT"):
+            raise SyntaxError(f"syntax error at or near {statement}")
+
         self.execced = True
 
         return FakeExec(statement)

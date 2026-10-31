@@ -17,12 +17,18 @@ _TSelectParam = TypeVar("_TSelectParam", bound=Any)
 def execute_statement(
     session: SessionDep, statement: SelectOfScalar
 ) -> Sequence[ChoreoSchema] | Sequence[None]:
-    try:
-        entries: Sequence[ChoreoSchema] | Sequence[None] = session.exec(statement).all()
-        return entries
-    except Exception as e:
-        print(f"Handle this error better: {e}")
-        return []
+    """
+    Executes a SQL statement.
+    All exec's should be executed from SelectOfScalar, although exec can accept different types in its overloads.
+    Strings passed to the .exec method will be of type 'text' from sqlalchemy.
+
+    Errors:
+    - SyntaxError: If SQL Syntax is incorrect
+    - ProgrammingError/UndefinedTable: If SQL table does not exist
+    """
+    entries = session.exec(statement).all()
+
+    return entries
 
 
 def create_entry(entry: ChoreoModelTypeVar, session: SessionDep) -> ChoreoModelTypeVar:

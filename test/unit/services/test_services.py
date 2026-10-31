@@ -1,7 +1,7 @@
 from uuid import uuid4
 from datetime import datetime
 
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, ProgrammingError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.services.services import (
@@ -18,12 +18,47 @@ from ..mocks import FakeModel, test_uuid, mock_get_entry_by_id, fake_model_all_e
 class TestExecuteStatement:
     def test_correct_statement_retrieves_all_entries(self, session_mock):
         statement = """SELECT fakemodel.id, fakemodel.foo, fakemodel.created_at
-        FROM fakemodels"""
+        FROM fakemodels
+        LIMIT :param_1 OFFSET :param_2"""
 
         entries = execute_statement(session_mock, statement)
 
         assert session_mock.execced == True
         assert entries == fake_model_all_entries
+
+    def test_no_results_returned_if_no_results_in_db(self, session_mock):
+        statement = """SELECT noresults.id, noresults.foo, noresults.created_at
+        FROM noresults
+        LIMIT :param_1 OFFSET :param_2"""
+
+        entries = execute_statement(session_mock, statement)
+
+        assert session_mock.execced == True
+        assert entries == []
+
+    def test_invalid_statement_throws_error(self, session_mock):
+        statement = "cheese"
+
+        try:
+            execute_statement(session_mock, statement)
+            assert False
+        except SyntaxError as e:
+            assert f"syntax error at or near {statement}" in str(e)
+        except Exception:
+            assert False
+
+    def test_nonexistient_table_throws_error(self, session_mock):
+        statement = """SELECT badtable.id, badtable.foo, badtable.created_at
+        FROM badtable
+        LIMIT :param_1 OFFSET :param_2"""
+
+        try:
+            execute_statement(session_mock, statement)
+            assert False
+        except ProgrammingError as e:
+            assert f"relation does not exist" in str(e)
+        except Exception:
+            assert False
 
 
 class TestCreateEntry:
