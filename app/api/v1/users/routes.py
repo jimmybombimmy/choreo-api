@@ -23,9 +23,11 @@ To do:
     - E.g. an entries obj inside with offset, limit, etc. after.
 - Unit tests
     - √√√build_get_all_entries_query
-    - execute_statement
+    - √√√execute_statement
     - build_paginated_response
+    - get_all_users (make sure to use MagicMock here)
 - Integration tests
+    - for get_all_users
 - Figure out why build_paginated_response doesn't work and fix
 - Find a way to make sure this returns a 200 as well
 - + error codes too

@@ -1,6 +1,5 @@
 from uuid import UUID
 from collections.abc import Sequence
-from typing import Any, TypeVar
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -10,16 +9,13 @@ from app.db.base import SessionDep
 from app.types.models import ChoreoModel, ChoreoModelTypeVar
 from app.types.schemas import ChoreoSchema
 
-_TSelectParam = TypeVar("_TSelectParam", bound=Any)
 
-
-# To do: Create proper error handling
 def execute_statement(
     session: SessionDep, statement: SelectOfScalar
 ) -> Sequence[ChoreoSchema] | Sequence[None]:
     """
     Executes a SQL statement.
-    All exec's should be executed from SelectOfScalar, although exec can accept different types in its overloads.
+    All exec's should be executed as SelectOfScalar, although exec can accept different types in its overloads.
     Strings passed to the .exec method will be of type 'text' from sqlalchemy.
 
     Errors:
@@ -50,8 +46,8 @@ def get_entry_by_id(
     Gets an entry by its ID and Model
 
     Errors:
-    - NoResultFound - as below, if entry isn't retrieved
-    - AttributeError - for issues with incorrect models
+    - NoResultFound: as below, if entry isn't retrieved
+    - AttributeError: for issues with incorrect models
     """
     retrieved_entry = session.get(Model, entry_id)
     if retrieved_entry == None:
