@@ -12,7 +12,7 @@ from app.types.schemas import ChoreoSchema
 
 def execute_statement(
     session: SessionDep, statement: SelectOfScalar
-) -> Sequence[ChoreoSchema] | Sequence[None]:
+) -> Sequence[ChoreoSchema | None]:
     """
     Executes a SQL statement.
     All exec's should be executed as SelectOfScalar, although exec can accept different types in its overloads.
