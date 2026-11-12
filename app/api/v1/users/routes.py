@@ -28,7 +28,7 @@ To do:
     - get_all_users (make sure to use MagicMock here)
 - Integration tests
     - for get_all_users
-- Figure out why build_paginated_response doesn't work and fix
+- √√√Figure out why build_paginated_response doesn't work and fix
 - √√√Find a way to make sure this returns a 200 as well
 - + error codes too
 - Make sure that the code is consistent and not a silly mix of OO and functional

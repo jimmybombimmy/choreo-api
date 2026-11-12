@@ -2,6 +2,8 @@ from typing import TypeAlias
 from uuid import UUID, uuid4
 from datetime import datetime
 
+from pydantic import BaseModel, ConfigDict
+
 from sqlalchemy.exc import NoResultFound, ProgrammingError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from sqlmodel import SQLModel, Field
@@ -13,6 +15,14 @@ class FakeModel(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     foo: str = Field(max_length=30)
     created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
+
+
+class FakeModelOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    foo: str
+    created_at: datetime
 
 
 fake_model_ids = [
