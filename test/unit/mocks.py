@@ -32,9 +32,12 @@ fake_model_ids = [
 ]
 
 fake_model_all_entries: list[FakeModel] = [
-    FakeModel(id=fake_model_ids[0], foo="bar"),
-    FakeModel(id=fake_model_ids[1], foo="bar"),
-    FakeModel(id=fake_model_ids[2], foo="bar"),
+    FakeModel(id=i, foo="bar") for i in fake_model_ids
+]
+
+fake_model_out_all_entries = [
+    FakeModelOut(id=i.id, foo=i.foo, created_at=i.created_at)
+    for i in fake_model_all_entries
 ]
 
 test_uuid = UUID("e97943d1-b1c1-4ab6-898a-c2344a6b5b1a")
