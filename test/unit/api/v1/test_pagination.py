@@ -8,9 +8,6 @@ from test.unit.mocks import (
     fake_model_out_all_entries,
 )
 
-## Test ideas
-# - Throw error for offset, limit, order, etc. not being correct
-
 
 class TestBuildPaginatedResponse:
     pagination_default_params = {
