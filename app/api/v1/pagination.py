@@ -23,7 +23,6 @@ def build_paginated_response(
     order: Order,
     entries: Sequence[ChoreoSchema | None],
 ) -> GetAllPaginatedResponse:
-    total = len(entries)
     returned_entries = entries[offset : offset + limit]
     count = len(returned_entries)
     base_url = f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/{model_name}"
@@ -46,7 +45,6 @@ def build_paginated_response(
 
     return GetAllPaginatedResponse(
         count=count,
-        total=total,
         next=get_next_url(),
         previous=get_previous_url(),
         offset=offset,
