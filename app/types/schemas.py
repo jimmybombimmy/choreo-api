@@ -11,6 +11,7 @@ ChoreoSchema: TypeAlias = UserOut | FakeModelOut  # Unit testing only
 
 class GetAllPaginatedResponse(BaseModel):
     count: int
+    total: int
     next: HttpUrl | None
     previous: HttpUrl | None
     offset: Offset
