@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from sqlalchemy import UnaryExpression
+from sqlalchemy import UnaryExpression, func
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlmodel import select
 from sqlmodel.sql.expression import SelectOfScalar
@@ -63,3 +63,11 @@ def build_get_all_entries_query(
         )
 
     return select(model).order_by(order_element()).offset(offset).limit(limit)
+
+
+def get_entries_total_count_query(
+    model: type[ChoreoModel],
+) -> SelectOfScalar:
+    validate_model(model)
+
+    return select(func.count()).select_from(model)

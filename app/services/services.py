@@ -1,5 +1,5 @@
 from uuid import UUID
-from collections.abc import Sequence
+from typing import Any
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -7,16 +7,16 @@ from sqlmodel.sql.expression import SelectOfScalar
 
 from app.db.base import SessionDep
 from app.types.models import ChoreoModel, ChoreoModelTypeVar
-from app.types.schemas import ChoreoSchema
 
 
-def execute_statement(
-    session: SessionDep, statement: SelectOfScalar
-) -> Sequence[ChoreoSchema | None]:
+def execute_statement(session: SessionDep, statement: SelectOfScalar) -> Any:  # noqa: ANN401
     """
     Executes a SQL statement.
     All exec's should be executed as SelectOfScalar, although exec can accept different types in its overloads.
     Strings passed to the .exec method will be of type 'text' from sqlalchemy.
+
+    Regarding "Any" - Allowing Any with the caveat that all callings of this function should have a return type (see user routes for example).
+    Issues previuosly arose with getting count vs getting values. Other solution is to write a near identical function to this but that's pointless.
 
     Errors:
     - SyntaxError: If SQL Syntax is incorrect

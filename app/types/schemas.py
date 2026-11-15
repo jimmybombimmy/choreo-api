@@ -10,10 +10,11 @@ ChoreoSchema: TypeAlias = UserOut | FakeModelOut  # Unit testing only
 
 
 class GetAllPaginatedResponse(BaseModel):
-    count: int
+    page_size: int
+    total_count: int
     next: HttpUrl | None
     previous: HttpUrl | None
     offset: Offset
     order: Order
-    filter: UserFilter
+    sort_by: UserFilter
     results: Sequence[ChoreoSchema | None]

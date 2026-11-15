@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -7,7 +9,11 @@ from app.db.base import SessionDep
 from app.enums.query_enums import UnaryExpressionStrings
 from app.models.users import User
 from app.services.services import execute_statement
-from app.services.queries import build_get_all_entries_query
+from app.services.queries import (
+    build_get_all_entries_query,
+    get_entries_total_count_query,
+)
+from app.types.schemas import ChoreoSchema
 from app.types.query_params import Offset, Limit, Order, UserFilter
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -21,6 +27,7 @@ To do:
 - Ensure returning object also returns query information
     - √√√E.g. an entries obj inside with offset, limit, etc. after.
     - Make sure type for get_all_users is updated accordingly
+- ASYNC/AWAIT
 - Unit tests
     - √√√build_get_all_entries_query
     - √√√execute_statement
@@ -32,6 +39,9 @@ To do:
 - √√√Find a way to make sure this returns a 200 as well
 - + error codes too
 - Make sure that the code is consistent and not a silly mix of OO and functional
+- create a function to get the total amount of values from a db
+    - then add that "total" to the paginated response
+    - Also, use this to determine whether it's right to generate a next_url
 """
 
 
@@ -44,12 +54,22 @@ def get_all_users(
     order: Order = UnaryExpressionStrings.asc,
 ) -> JSONResponse:
 
-    statement = build_get_all_entries_query(User, offset, limit, filter, order)
+    get_all_statement = build_get_all_entries_query(User, offset, limit, filter, order)
+    entries: Sequence[ChoreoSchema | None] = execute_statement(
+        session, get_all_statement
+    )
 
-    entries = execute_statement(session, statement)
+    count_statement = get_entries_total_count_query(User)
+    total_count: list[int] = execute_statement(session, count_statement)
 
     paginated_response = build_paginated_response(
-        "users", offset, limit, filter, order, entries
+        model_name="users",
+        offset=offset,
+        limit=limit,
+        filter=filter,
+        order=order,
+        total_count=total_count[0],
+        entries=entries,
     )
 
     return JSONResponse(content=jsonable_encoder(paginated_response))

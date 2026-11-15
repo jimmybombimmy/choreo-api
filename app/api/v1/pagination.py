@@ -21,14 +21,14 @@ def build_paginated_response(
     limit: Limit,
     filter: UserFilter,
     order: Order,
+    total_count: int,
     entries: Sequence[ChoreoSchema | None],
 ) -> GetAllPaginatedResponse:
-    returned_entries = entries[offset : offset + limit]
-    count = len(returned_entries)
+    page_size = len(entries)
     base_url = f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/{model_name}"
 
     def get_next_url() -> HttpUrl | None:
-        if count < limit:
+        if page_size < limit:
             return None
         return validate_http_url(
             f"{base_url}?limit={limit}&filter={filter}&order={order}&offset={offset + limit}"
@@ -44,11 +44,12 @@ def build_paginated_response(
         return validate_http_url(f"{prev_base_url}&offset={offset - limit}")
 
     return GetAllPaginatedResponse(
-        count=count,
+        page_size=page_size,
+        total_count=total_count,
         next=get_next_url(),
         previous=get_previous_url(),
         offset=offset,
         order=order,
-        filter=filter,
-        results=returned_entries,
+        sort_by=filter,
+        results=entries,
     )
