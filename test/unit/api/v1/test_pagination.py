@@ -26,13 +26,13 @@ class TestBuildPaginatedResponse:
         )(self.pagination_default_params)
 
         result = build_paginated_response(
-            model_name,
-            offset,
-            limit,
-            filter,
-            order,
-            fake_model_all_entries,
-            len(fake_model_all_entries),
+            model_name=model_name,
+            offset=offset,
+            limit=limit,
+            filter=filter,
+            order=order,
+            total_count=len(fake_model_all_entries),
+            entries=fake_model_all_entries,
         )
 
         assert result.page_size == len(fake_model_all_entries)
@@ -89,13 +89,13 @@ class TestBuildPaginatedResponse:
         )(vals)
 
         result = build_paginated_response(
-            model_name,
-            offset,
-            limit,
-            filter,
-            order,
-            results,
-            len(fake_model_all_entries),
+            model_name=model_name,
+            offset=offset,
+            limit=limit,
+            filter=filter,
+            order=order,
+            total_count=len(fake_model_all_entries),
+            entries=results,
         )
 
         assert result.page_size == len(results)
@@ -115,7 +115,13 @@ class TestBuildPaginatedResponse:
         entries_length = len(fake_model_all_entries)
 
         result = build_paginated_response(
-            model_name, entries_length, limit, filter, order, [], 0
+            model_name=model_name,
+            offset=entries_length,
+            limit=limit,
+            filter=filter,
+            order=order,
+            total_count=0,
+            entries=[],
         )
 
         assert result.page_size == 0
