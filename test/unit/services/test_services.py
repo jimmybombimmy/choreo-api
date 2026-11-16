@@ -1,5 +1,6 @@
 from uuid import uuid4
 from datetime import datetime
+import pytest
 
 from sqlalchemy.exc import NoResultFound, ProgrammingError
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -25,6 +26,15 @@ class TestExecuteStatement:
 
         assert session_mock.execced == True
         assert entries == fake_model_all_entries
+
+    def test_count_statement_retrieves_list_with_num(self, session_mock):
+        statement = """SELECT count(*) AS count_1
+        FROM fakemodels"""
+
+        entries = execute_statement(session_mock, statement)
+
+        assert session_mock.execced == True
+        assert entries == [3]
 
     def test_no_results_returned_if_no_results_in_db(self, session_mock):
         statement = """SELECT noresults.id, noresults.foo, noresults.created_at

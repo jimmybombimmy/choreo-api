@@ -77,7 +77,10 @@ class FakeExec:
 
     def all(self):
 
-        if "fakemodel" in self.statement:
+        if "count(*)" in self.statement:
+            return [3]
+
+        if "SELECT fakemodel.id" in self.statement:
             return fake_model_all_entries
 
         return []
