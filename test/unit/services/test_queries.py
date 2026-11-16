@@ -2,17 +2,17 @@ import pytest
 from operator import itemgetter
 
 from app.core.errors import error_builder
-from app.services.queries import build_get_all_entries_query
+from app.services.queries import (
+    build_get_all_entries_query,
+    get_entries_total_count_query,
+)
 
 from ..mocks import FakeModel, UnacceptableModel
 
 
-def build_expected_query_strings(filter, order):
+def build_expected_get_all_query(filter, order):
     """
-    A simple helper function to create the str value of the expected sql query as an array
-
-    Be warned: If 'order' is any other val than 'desc' or 'asc' in UnaryExpressionStrings
-    then the order of the returning SQL Query will change and break tests.
+    A simple helper function to create the str value of the expected get all sql query as an array
     """
 
     if order.upper() == "DESC":
@@ -22,6 +22,17 @@ def build_expected_query_strings(filter, order):
         "SELECT fake_model.id, fake_model.foo, fake_model.created_at",
         f"FROM fake_model ORDER BY fake_model.{filter} {order.upper()}",
         "LIMIT :param_1 OFFSET :param_2",
+    ]
+
+
+def build_expected_count_query():
+    """
+    A simple helper function to create the str value of the expected count sql query as an array
+    """
+
+    return [
+        "SELECT count(*) AS count_1",
+        "FROM fake_model",
     ]
 
 
@@ -44,7 +55,7 @@ class TestBuildGetAllEntriesQuery:
                 FakeModel, offset, limit, filter, order
             )
 
-            query_arr = build_expected_query_strings(filter, order)
+            query_arr = build_expected_get_all_query(filter, order)
             for query_line in query_arr:
                 assert query_line in str(statement)
 
@@ -83,7 +94,7 @@ class TestBuildGetAllEntriesQuery:
                 FakeModel, offset, limit, filter, order
             )
 
-            query_arr = build_expected_query_strings(filter, order)
+            query_arr = build_expected_get_all_query(filter, order)
             for query_line in query_arr:
                 assert query_line in str(statement)
 
@@ -291,3 +302,30 @@ class TestBuildGetAllEntriesQuery:
                 assert err_expected in str(e)
             except Exception as e:
                 assert False, f"Incorrect exception raised {e}"
+
+
+@pytest.mark.only
+class TestGetEntriesTotalCountQuery:
+    # test default model
+    # Test bad model
+    def test_valid_model_returns_entry_count_query(self):
+        statement = get_entries_total_count_query(FakeModel)
+
+        query_arr = build_expected_count_query()
+        for query_line in query_arr:
+            assert query_line in str(statement)
+
+    def test_invalid_model_throws_error(self):
+        try:
+            get_entries_total_count_query(UnacceptableModel)
+            assert False, ""
+
+        except TypeError as e:
+            assert str(
+                error_builder(
+                    TypeError, "model", UnacceptableModel, "ChoreoModel class"
+                )
+            ) in str(e)
+
+        except Exception as e:
+            assert False, f"Incorrect exception raised {e}"
