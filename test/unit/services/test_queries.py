@@ -304,7 +304,6 @@ class TestBuildGetAllEntriesQuery:
                 assert False, f"Incorrect exception raised {e}"
 
 
-@pytest.mark.only
 class TestGetEntriesTotalCountQuery:
     # test default model
     # Test bad model

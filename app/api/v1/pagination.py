@@ -28,8 +28,9 @@ def build_paginated_response(
     base_url = f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/{model_name}"
 
     def get_next_url() -> HttpUrl | None:
-        if page_size < limit:
+        if (page_size < limit) or total_count == limit + offset:
             return None
+
         return validate_http_url(
             f"{base_url}?limit={limit}&filter={filter}&order={order}&offset={offset + limit}"
         )
@@ -39,8 +40,16 @@ def build_paginated_response(
             return None
 
         prev_base_url = f"{base_url}?limit={limit}&filter={filter}&order={order}"
+
+        if offset > total_count:
+            if total_count - limit < 0:
+                return validate_http_url(f"{prev_base_url}&offset={0}")
+
+            return validate_http_url(f"{prev_base_url}&offset={offset - limit}")
+
         if offset < limit:
             return validate_http_url(f"{prev_base_url}&offset=0")
+
         return validate_http_url(f"{prev_base_url}&offset={offset - limit}")
 
     return GetAllPaginatedResponse(
