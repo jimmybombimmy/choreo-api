@@ -2,6 +2,7 @@ import pytest
 from operator import itemgetter
 from pydantic import HttpUrl
 
+from app.enums.query_enums import UnaryExpressionStrings
 from app.api.v1.pagination import build_paginated_response
 from test.unit.mocks import (
     fake_model_all_entries,
@@ -15,7 +16,7 @@ class TestBuildPaginatedResponse:
         "offset": 0,
         "limit": 50,
         "filter": "created_at",
-        "order": "asc",
+        "order": UnaryExpressionStrings.asc,
     }
 
     def test_default_params_returns_all_entries_without_pagination_urls(
