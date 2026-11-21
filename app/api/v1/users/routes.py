@@ -6,7 +6,6 @@ from fastapi.encoders import jsonable_encoder
 
 from app.api.v1.pagination import build_paginated_response
 from app.db.base import SessionDep
-from app.enums.query_enums import UnaryExpressionStrings
 from app.models.users import User
 from app.services.services import execute_statement
 from app.services.queries import (
@@ -53,7 +52,7 @@ def get_all_users(
     offset: Offset = 0,
     limit: Limit = 50,
     filter: UserFilter = "created_at",
-    order: Order = UnaryExpressionStrings.asc,
+    order: Order = Order.asc,  # required rather than UnaryExpressions.asc as that will cause errors as a query param
 ) -> JSONResponse:
 
     get_all_statement = build_get_all_entries_query(User, offset, limit, filter, order)
