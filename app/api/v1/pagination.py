@@ -24,6 +24,7 @@ def build_paginated_response(
     total_count: int,
     entries: Sequence[ChoreoSchema | None],
 ) -> GetAllPaginatedResponse:
+    order_val = order.value
     page_size = len(entries)
     base_url = f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/{model_name}"
 
@@ -32,14 +33,14 @@ def build_paginated_response(
             return None
 
         return validate_http_url(
-            f"{base_url}?limit={limit}&filter={filter}&order={order}&offset={offset + limit}"
+            f"{base_url}?limit={limit}&filter={filter}&order={order_val}&offset={offset + limit}"
         )
 
     def get_previous_url() -> HttpUrl | None:
         if offset == 0:
             return None
 
-        prev_base_url = f"{base_url}?limit={limit}&filter={filter}&order={order}"
+        prev_base_url = f"{base_url}?limit={limit}&filter={filter}&order={order_val}"
 
         if offset > total_count:
             if total_count - limit < 0:

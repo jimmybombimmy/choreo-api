@@ -4,7 +4,6 @@ from operator import itemgetter
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.api.v1.users.routes import get_all_users
 from app.scripts.seed.test_data import test_users
 from app.core.config import settings
 
@@ -39,8 +38,11 @@ def sort_users_by_id(users):
     return ordered_users
 
 
+@pytest.mark.integration
 class TestGetAllUsers:
-    def test_default_values_returns_paginated_response_when_no_params_provided(self):
+    def test_200_default_values_returns_paginated_response_when_no_params_provided(
+        self,
+    ):
         client = TestClient(app=app)
 
         response = client.get(url=f"{settings.API_V1_STR}/users/")
@@ -63,7 +65,7 @@ class TestGetAllUsers:
             assert test_users_out[x]["username"] == j["results"][x]["username"]
             assert test_users_out[x]["email"] == j["results"][x]["email"]
 
-    def test_default_values_returns_paginated_response_when_params_provided(self):
+    def test_200_default_values_returns_paginated_response_when_params_provided(self):
         client = TestClient(app=app)
 
         response = client.get(
@@ -155,7 +157,9 @@ class TestGetAllUsers:
     ]
 
     @pytest.mark.parametrize("vals,results,urls", non_default_params_cases)
-    def test_non_defaults(self, vals, results, urls):
+    def test_200_non_default_values_return_paginated_response(
+        self, vals, results, urls
+    ):
         offset, limit, filter, order = itemgetter("offset", "limit", "filter", "order")(
             vals
         )
