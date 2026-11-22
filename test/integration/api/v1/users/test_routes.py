@@ -197,6 +197,7 @@ class TestGetAllUsers:
                 assert test_users_out[x]["username"] == j["results"][x]["username"]
                 assert test_users_out[x]["email"] == j["results"][x]["email"]
 
+    # these are probably just unit tests tbf - move them?
     class TestErrorPaths:
         bad_params_cases = [
             pytest.param(
@@ -210,12 +211,134 @@ class TestGetAllUsers:
                         "ctx": {"ge": 0},
                     }
                 ],
-                id="offset",
+                id="offset<0",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "offset": "one"},
+                [
+                    {
+                        "type": "int_parsing",
+                        "loc": ["query", "offset"],
+                        "msg": "Input should be a valid integer, unable to parse string as an integer",
+                        "input": "one",
+                    }
+                ],
+                id="offset=str",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "offset": True},
+                [
+                    {
+                        "type": "int_parsing",
+                        "loc": ["query", "offset"],
+                        "msg": "Input should be a valid integer, unable to parse string as an integer",
+                        "input": "true",
+                    }
+                ],
+                id="offset=bool",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "limit": 0},
+                [
+                    {
+                        "type": "greater_than_equal",
+                        "loc": ["query", "limit"],
+                        "msg": "Input should be greater than or equal to 1",
+                        "input": "0",
+                        "ctx": {"ge": 1},
+                    }
+                ],
+                id="limit=0",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "limit": -5},
+                [
+                    {
+                        "type": "greater_than_equal",
+                        "loc": ["query", "limit"],
+                        "msg": "Input should be greater than or equal to 1",
+                        "input": "-5",
+                        "ctx": {"ge": 1},
+                    }
+                ],
+                id="limit<0",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "limit": False},
+                [
+                    {
+                        "type": "int_parsing",
+                        "loc": ["query", "limit"],
+                        "msg": "Input should be a valid integer, unable to parse string as an integer",
+                        "input": "false",
+                    }
+                ],
+                id="limit=str/bool",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "filter": "bad_field"},
+                [
+                    {
+                        "type": "literal_error",
+                        "loc": ["query", "filter"],
+                        "msg": "Input should be 'id', 'username', 'email', 'created_at' or 'updated_at'",
+                        "input": "bad_field",
+                        "ctx": {
+                            "expected": "'id', 'username', 'email', 'created_at' or 'updated_at'",
+                        },
+                    }
+                ],
+                id="filter=invalid_str",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "filter": 123},
+                [
+                    {
+                        "type": "literal_error",
+                        "loc": ["query", "filter"],
+                        "msg": "Input should be 'id', 'username', 'email', 'created_at' or 'updated_at'",
+                        "input": "123",
+                        "ctx": {
+                            "expected": "'id', 'username', 'email', 'created_at' or 'updated_at'",
+                        },
+                    }
+                ],
+                id="filter=num",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "order": "bad_field"},
+                [
+                    {
+                        "type": "enum",
+                        "loc": ["query", "order"],
+                        "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        "input": "bad_field",
+                        "ctx": {
+                            "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        },
+                    }
+                ],
+                id="filter=num",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "order": 123},
+                [
+                    {
+                        "type": "enum",
+                        "loc": ["query", "order"],
+                        "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        "input": "123",
+                        "ctx": {
+                            "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        },
+                    }
+                ],
+                id="filter=num",
             ),
         ]
 
         @pytest.mark.parametrize("vals,detail", bad_params_cases)
-        def test_422_incorrect_query_params_raises_error(self, vals, detail):
+        def test_422_single_incorrect_query_param_raises_error(self, vals, detail):
             offset, limit, filter, order = itemgetter(
                 "offset", "limit", "filter", "order"
             )(vals)
@@ -230,7 +353,58 @@ class TestGetAllUsers:
                     "order": order,
                 },
             )
-            print(f"rrr {response.json()}")
             assert response.status_code == 422
 
             assert response.json()["detail"] == detail
+
+        def test_422_multiple_incorrect_query_params_raises_error(self):
+            client = TestClient(app=app)
+
+            bad_params = {
+                "offset": -1,
+                "limit": "one hundred",
+                "filter": "123",
+                "order": "bad",
+            }
+
+            error_details = [
+                {
+                    "type": "greater_than_equal",
+                    "loc": ["query", "offset"],
+                    "msg": "Input should be greater than or equal to 0",
+                    "input": "-1",
+                    "ctx": {"ge": 0},
+                },
+                {
+                    "type": "int_parsing",
+                    "loc": ["query", "limit"],
+                    "msg": "Input should be a valid integer, unable to parse string as an integer",
+                    "input": "one hundred",
+                },
+                {
+                    "type": "literal_error",
+                    "loc": ["query", "filter"],
+                    "msg": "Input should be 'id', 'username', 'email', 'created_at' or 'updated_at'",
+                    "input": "123",
+                    "ctx": {
+                        "expected": "'id', 'username', 'email', 'created_at' or 'updated_at'"
+                    },
+                },
+                {
+                    "type": "enum",
+                    "loc": ["query", "order"],
+                    "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                    "input": "bad",
+                    "ctx": {
+                        "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'"
+                    },
+                },
+            ]
+
+            response = client.get(
+                url=f"{settings.API_V1_STR}/users/",
+                params=bad_params,
+            )
+            assert response.status_code == 422
+
+            assert response.json()["detail"] == error_details
