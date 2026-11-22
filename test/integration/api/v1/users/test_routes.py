@@ -17,7 +17,7 @@ tests
 - √√√A bunch of different changes
 
 sad path tests
-- Basically just copy all from test/unit/services/test_services.py
+- Basically just copy all from test/unit/services/test_queries.py
 - Think about their error codes
 """
 
@@ -40,151 +40,197 @@ def sort_users_by_id(users):
 
 @pytest.mark.integration
 class TestGetAllUsers:
-    def test_200_default_values_returns_paginated_response_when_no_params_provided(
-        self,
-    ):
-        client = TestClient(app=app)
+    class TestExpectedPaths:
+        def test_200_default_values_returns_paginated_response_when_no_params_provided(
+            self,
+        ):
+            client = TestClient(app=app)
 
-        response = client.get(url=f"{settings.API_V1_STR}/users/")
-        assert response.status_code == 200
+            response = client.get(url=f"{settings.API_V1_STR}/users/")
+            assert response.status_code == 200
 
-        j = response.json()
-        assert j["page_size"] == len(test_users)
-        assert j["total_count"] == len(test_users)
-        assert j["next"] == None
-        assert j["previous"] == None
-        assert j["offset"] == 0
-        assert j["order"] == "asc"
-        assert j["sort_by"] == "created_at"
+            j = response.json()
+            assert j["page_size"] == len(test_users)
+            assert j["total_count"] == len(test_users)
+            assert j["next"] == None
+            assert j["previous"] == None
+            assert j["offset"] == 0
+            assert j["order"] == "asc"
+            assert j["sort_by"] == "created_at"
 
-        test_users_out = []
-        for user in test_users:
-            test_users_out.append(user.model_dump(mode="json"))
-        for x in range(len(test_users_out)):
-            assert test_users_out[x]["id"] == j["results"][x]["id"]
-            assert test_users_out[x]["username"] == j["results"][x]["username"]
-            assert test_users_out[x]["email"] == j["results"][x]["email"]
+            test_users_out = []
+            for user in test_users:
+                test_users_out.append(user.model_dump(mode="json"))
+            for x in range(len(test_users_out)):
+                assert test_users_out[x]["id"] == j["results"][x]["id"]
+                assert test_users_out[x]["username"] == j["results"][x]["username"]
+                assert test_users_out[x]["email"] == j["results"][x]["email"]
 
-    def test_200_default_values_returns_paginated_response_when_params_provided(self):
-        client = TestClient(app=app)
+        def test_200_default_values_returns_paginated_response_when_params_provided(
+            self,
+        ):
+            client = TestClient(app=app)
 
-        response = client.get(
-            url=f"{settings.API_V1_STR}/users/",
-            params=build_get_all_entries_default_params,
-        )
-        assert response.status_code == 200
+            response = client.get(
+                url=f"{settings.API_V1_STR}/users/",
+                params=build_get_all_entries_default_params,
+            )
+            assert response.status_code == 200
 
-        j = response.json()
-        assert j["page_size"] == len(test_users)
-        assert j["total_count"] == len(test_users)
-        assert j["next"] == None
-        assert j["previous"] == None
-        assert j["offset"] == 0
-        assert j["order"] == "asc"
-        assert j["sort_by"] == "created_at"
+            j = response.json()
+            assert j["page_size"] == len(test_users)
+            assert j["total_count"] == len(test_users)
+            assert j["next"] == None
+            assert j["previous"] == None
+            assert j["offset"] == 0
+            assert j["order"] == "asc"
+            assert j["sort_by"] == "created_at"
 
-        test_users_out = []
-        for user in test_users:
-            test_users_out.append(user.model_dump(mode="json"))
-        for x in range(len(test_users_out)):
-            assert test_users_out[x]["id"] == j["results"][x]["id"]
-            assert test_users_out[x]["username"] == j["results"][x]["username"]
-            assert test_users_out[x]["email"] == j["results"][x]["email"]
+            test_users_out = []
+            for user in test_users:
+                test_users_out.append(user.model_dump(mode="json"))
+            for x in range(len(test_users_out)):
+                assert test_users_out[x]["id"] == j["results"][x]["id"]
+                assert test_users_out[x]["username"] == j["results"][x]["username"]
+                assert test_users_out[x]["email"] == j["results"][x]["email"]
 
-    non_default_params_cases = [
-        # No HttpURL in urls due to json()
-        pytest.param(
-            {**build_get_all_entries_default_params, "offset": 1},
-            test_users[1:3],
-            {
-                "next": None,
-                "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
-            },
-            id="offset",
-        ),
-        pytest.param(
-            {**build_get_all_entries_default_params, "limit": 2},
-            test_users[0:2],
-            {
-                "next": "http://localhost:8000/api/v1/users?limit=2&filter=created_at&order=asc&offset=2",
-                "previous": None,
-            },
-            id="limit",
-        ),
-        pytest.param(
-            {**build_get_all_entries_default_params, "limit": 1, "offset": 1},
-            test_users[1:2],
-            {
-                "next": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=2",
-                "previous": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=0",
-            },
-            id="limit+offset",
-        ),
-        pytest.param(
-            {**build_get_all_entries_default_params, "filter": "id"},
-            sort_users_by_id(test_users),
-            {
-                "next": None,
-                "previous": None,
-            },
-            id="filter",
-        ),
-        pytest.param(
-            {**build_get_all_entries_default_params, "order": "desc"},
-            test_users[::-1],
-            {
-                "next": None,
-                "previous": None,
-            },
-            id="order",
-        ),
-        pytest.param(
-            {
-                **build_get_all_entries_default_params,
-                "limit": 1,
-                "offset": 1,
-                "filter": "id",
-                "order": "desc",
-            },
-            # Sorted by ID, then reversed to get the second to last user
-            sort_users_by_id(sort_users_by_id(test_users)[-2:-1]),
-            {
-                "next": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=2",
-                "previous": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=0",
-            },
-            id="all",
-        ),
-    ]
+        non_default_params_cases = [
+            # No HttpURL in urls due to json()
+            pytest.param(
+                {**build_get_all_entries_default_params, "offset": 1},
+                test_users[1:3],
+                {
+                    "next": None,
+                    "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                },
+                id="offset",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "limit": 2},
+                test_users[0:2],
+                {
+                    "next": "http://localhost:8000/api/v1/users?limit=2&filter=created_at&order=asc&offset=2",
+                    "previous": None,
+                },
+                id="limit",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "limit": 1, "offset": 1},
+                test_users[1:2],
+                {
+                    "next": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=2",
+                    "previous": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=0",
+                },
+                id="limit+offset",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "filter": "id"},
+                sort_users_by_id(test_users),
+                {
+                    "next": None,
+                    "previous": None,
+                },
+                id="filter",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "order": "desc"},
+                test_users[::-1],
+                {
+                    "next": None,
+                    "previous": None,
+                },
+                id="order",
+            ),
+            pytest.param(
+                {
+                    **build_get_all_entries_default_params,
+                    "limit": 1,
+                    "offset": 1,
+                    "filter": "id",
+                    "order": "desc",
+                },
+                # Sorted by ID, then reversed to get the second to last user
+                sort_users_by_id(sort_users_by_id(test_users)[-2:-1]),
+                {
+                    "next": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=2",
+                    "previous": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=0",
+                },
+                id="all",
+            ),
+        ]
 
-    @pytest.mark.parametrize("vals,results,urls", non_default_params_cases)
-    def test_200_non_default_values_return_paginated_response(
-        self, vals, results, urls
-    ):
-        offset, limit, filter, order = itemgetter("offset", "limit", "filter", "order")(
-            vals
-        )
-        client = TestClient(app=app)
+        @pytest.mark.parametrize("vals,results,urls", non_default_params_cases)
+        def test_200_non_default_values_return_paginated_response(
+            self, vals, results, urls
+        ):
+            offset, limit, filter, order = itemgetter(
+                "offset", "limit", "filter", "order"
+            )(vals)
+            client = TestClient(app=app)
 
-        response = client.get(
-            url=f"{settings.API_V1_STR}/users/",
-            params={"offset": offset, "limit": limit, "filter": filter, "order": order},
-        )
-        assert response.status_code == 200
+            response = client.get(
+                url=f"{settings.API_V1_STR}/users/",
+                params={
+                    "offset": offset,
+                    "limit": limit,
+                    "filter": filter,
+                    "order": order,
+                },
+            )
+            assert response.status_code == 200
 
-        j = response.json()
-        assert j["page_size"] == len(results)
-        assert j["total_count"] == len(test_users)
-        assert j["next"] == urls["next"]
-        assert j["previous"] == urls["previous"]
-        assert j["offset"] == offset
-        assert j["order"] == order
-        assert j["sort_by"] == filter
+            j = response.json()
+            assert j["page_size"] == len(results)
+            assert j["total_count"] == len(test_users)
+            assert j["next"] == urls["next"]
+            assert j["previous"] == urls["previous"]
+            assert j["offset"] == offset
+            assert j["order"] == order
+            assert j["sort_by"] == filter
 
-        test_users_out = []
-        for user in results:
-            test_users_out.append(user.model_dump(mode="json"))
+            test_users_out = []
+            for user in results:
+                test_users_out.append(user.model_dump(mode="json"))
 
-        for x in range(len(test_users_out)):
-            assert test_users_out[x]["id"] == j["results"][x]["id"]
-            assert test_users_out[x]["username"] == j["results"][x]["username"]
-            assert test_users_out[x]["email"] == j["results"][x]["email"]
+            for x in range(len(test_users_out)):
+                assert test_users_out[x]["id"] == j["results"][x]["id"]
+                assert test_users_out[x]["username"] == j["results"][x]["username"]
+                assert test_users_out[x]["email"] == j["results"][x]["email"]
+
+    class TestErrorPaths:
+        bad_params_cases = [
+            pytest.param(
+                {**build_get_all_entries_default_params, "offset": -1},
+                [
+                    {
+                        "type": "greater_than_equal",
+                        "loc": ["query", "offset"],
+                        "msg": "Input should be greater than or equal to 0",
+                        "input": "-1",
+                        "ctx": {"ge": 0},
+                    }
+                ],
+                id="offset",
+            ),
+        ]
+
+        @pytest.mark.parametrize("vals,detail", bad_params_cases)
+        def test_422_incorrect_query_params_raises_error(self, vals, detail):
+            offset, limit, filter, order = itemgetter(
+                "offset", "limit", "filter", "order"
+            )(vals)
+            client = TestClient(app=app)
+
+            response = client.get(
+                url=f"{settings.API_V1_STR}/users/",
+                params={
+                    "offset": offset,
+                    "limit": limit,
+                    "filter": filter,
+                    "order": order,
+                },
+            )
+            print(f"rrr {response.json()}")
+            assert response.status_code == 422
+
+            assert response.json()["detail"] == detail
