@@ -1,11 +1,15 @@
+from typing import Annotated
 import pytest
 from operator import itemgetter
 
+from fastapi import Depends
 from fastapi.testclient import TestClient
+from sqlmodel import Session
 
 from app.main import app
 from app.scripts.seed.test_data import test_users
 from app.core.config import settings
+from test.integration.conftest import bad_get_session
 
 """
 tests
@@ -36,6 +40,9 @@ def sort_users_by_id(users):
         ordered_users.append(u)
 
     return ordered_users
+
+
+SessionDep = Annotated[Session, Depends(bad_get_session)]
 
 
 @pytest.mark.integration
@@ -408,3 +415,16 @@ class TestGetAllUsers:
             assert response.status_code == 422
 
             assert response.json()["detail"] == error_details
+
+        def test_503_database_unavailable(self, bad_session_endpoint_fixture):
+            client = TestClient(
+                app=app,
+            )
+
+            response = client.get(
+                url=f"{settings.API_V1_STR}/users/",
+                params={"session": bad_session_endpoint_fixture},
+            )
+
+            assert response.status_code == 503
+            assert response.json()["detail"] == "Database service unavailable"

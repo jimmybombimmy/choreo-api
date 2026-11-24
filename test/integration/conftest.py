@@ -7,6 +7,7 @@ from pydantic import PostgresDsn
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
+from app.main import app
 from app.db.base import get_session
 from app.models.collections import Collection
 from app.services.services import create_entry, delete_entry
@@ -46,6 +47,18 @@ def bad_get_session():
 @pytest.fixture
 def bad_session_fixture():
     yield from bad_get_session()
+
+
+@pytest.fixture
+def bad_session_endpoint_fixture():
+    original_overrides = app.dependency_overrides.copy()
+
+    app.dependency_overrides[get_session] = bad_get_session
+
+    yield
+
+    app.dependency_overrides.clear()
+    app.dependency_overrides.update(original_overrides)
 
 
 @pytest.fixture

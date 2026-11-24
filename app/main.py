@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1.router import api_router
 
@@ -14,8 +16,22 @@ app.include_router(api_router)
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, str]:
     return {"Hello": "World."}
+
+
+@app.exception_handler(SQLAlchemyError)
+def sqlalchemy_exception_handler(
+    _request: Request,
+    _exc: SQLAlchemyError,
+) -> JSONResponse:
+
+    return JSONResponse(
+        status_code=503,
+        content={
+            "detail": "Database service unavailable",
+        },
+    )
 
 
 # @app.get("/items/{item_id}")
