@@ -34,8 +34,8 @@ To do:
     - √√√get_entries_total_count_query
     - √√√build_paginated_response
     - get_all_users (make sure to use MagicMock here)
-- Integration tests
-    - get_all_users
+- √√√Integration tests
+    - √√√get_all_users
 - √√√Figure out why build_paginated_response doesn't work and fix
 - √√√Find a way to make sure this returns a 200 as well
 - + error codes too

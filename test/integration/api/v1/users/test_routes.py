@@ -1,5 +1,6 @@
 from typing import Annotated
 import pytest
+from unittest.mock import Mock
 from operator import itemgetter
 
 from fastapi import Depends
@@ -10,20 +11,6 @@ from app.main import app
 from app.scripts.seed.test_data import test_users
 from app.core.config import settings
 from test.integration.conftest import bad_get_session
-
-"""
-tests
-- √√√default values
-- √√√offset > 0
-- √√√small limit
-- √√√filter by a certain thing
-- √√√order desc
-- √√√A bunch of different changes
-
-sad path tests
-- Basically just copy all from test/unit/services/test_queries.py
-- Think about their error codes
-"""
 
 build_get_all_entries_default_params = {
     "offset": 0,
@@ -111,6 +98,15 @@ class TestGetAllUsers:
                     "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
                 },
                 id="offset",
+            ),
+            pytest.param(
+                {**build_get_all_entries_default_params, "offset": 50},
+                [],
+                {
+                    "next": None,
+                    "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                },
+                id="offset>values",
             ),
             pytest.param(
                 {**build_get_all_entries_default_params, "limit": 2},
@@ -203,6 +199,30 @@ class TestGetAllUsers:
                 assert test_users_out[x]["id"] == j["results"][x]["id"]
                 assert test_users_out[x]["username"] == j["results"][x]["username"]
                 assert test_users_out[x]["email"] == j["results"][x]["email"]
+
+        @pytest.mark.only
+        def test_200_empty_db_returns_no_values_paginated_response(self, monkeypatch):
+
+            # LEARN: execute_statement attribute is from where it's called, not where it lives (app.services.services.execute_statement)
+            monkeypatch.setattr(
+                "app.api.v1.users.routes.execute_statement",
+                Mock(side_effect=[[], [0]]),
+            )
+
+            client = TestClient(app=app)
+
+            response = client.get(url=f"{settings.API_V1_STR}/users/")
+            assert response.status_code == 200
+
+            j = response.json()
+            assert j["page_size"] == 0
+            assert j["total_count"] == 0
+            assert j["next"] == None
+            assert j["previous"] == None
+            assert j["offset"] == 0
+            assert j["order"] == "asc"
+            assert j["sort_by"] == "created_at"
+            assert j["results"] == []
 
     # these are probably just unit tests tbf - move them?
     class TestErrorPaths:
