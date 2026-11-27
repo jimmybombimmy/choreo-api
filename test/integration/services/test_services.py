@@ -80,7 +80,6 @@ class Test_Create_Entry:
         except Exception:
             assert False, "Incorrect exception given"
 
-    @pytest.mark.only
     def test_operation_error_thrown_if_connection_refused(self, bad_session_fixture):
         """
         All connection errors due to bad postgres info are "OperationalErrors"

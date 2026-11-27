@@ -1,7 +1,4 @@
-from pydantic import (
-    PostgresDsn,
-    computed_field,
-)
+from pydantic import PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,9 +8,14 @@ class Settings(BaseSettings):
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
+        coerce_numbers_to_str=False,
     )
 
     API_V1_STR: str = "/api/v1"
+
+    PROTOCOL: str = "http"
+    HOST: str = "localhost"
+    PORT: int = 3000
 
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432

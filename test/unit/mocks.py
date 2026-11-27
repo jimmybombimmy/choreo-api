@@ -1,21 +1,60 @@
 from typing import TypeAlias
-from uuid import UUID
+from uuid import UUID, uuid4
+from datetime import datetime
 
-from sqlalchemy.exc import NoResultFound
+from pydantic import BaseModel, ConfigDict
+
+from sqlalchemy.exc import NoResultFound, ProgrammingError
 from sqlalchemy.orm.exc import UnmappedInstanceError
+from sqlmodel import SQLModel, Field
 
 
-class FakeModel:
-    def __init__(self, id, foo):
-        self.id = id
-        self.foo = foo
+class FakeModel(SQLModel, table=True):
+    __tablename__ = "fake_model"
 
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    foo: str = Field(max_length=30)
+    created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
+
+
+class FakeModelOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    foo: str
+    created_at: datetime
+
+
+fake_model_ids = [
+    UUID("ee7f81eb-97c3-45cd-9d21-52900ddcbb34"),
+    UUID("35af15f3-549b-4d5f-8cbb-822d86357359"),
+    UUID("da28bad6-9058-428f-bcb6-d8c0c466bb4b"),
+]
+
+fake_model_all_entries: list[FakeModel] = [
+    FakeModel(id=i, foo="bar") for i in fake_model_ids
+]
+
+fake_model_out_all_entries = [
+    FakeModelOut(id=i.id, foo=i.foo, created_at=i.created_at)
+    for i in fake_model_all_entries
+]
 
 test_uuid = UUID("e97943d1-b1c1-4ab6-898a-c2344a6b5b1a")
 
 fake_entry = FakeModel(id=test_uuid, foo="bar")
 
 MockChoreoModel: TypeAlias = FakeModel
+
+
+# Unlike FakeModel, this isn't in the ChoreoModel TypeAlias
+# so this will throw errors for model
+class UnacceptableModel(SQLModel, table=True):
+    __tablename__ = "unacceptable_model"
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    foo: str = Field(max_length=30)
+    created_at: datetime = Field(default_factory=lambda: datetime(2020, 5, 17))
 
 
 def mock_get_entry_by_id(entry_id, _Model, _session):
@@ -32,6 +71,21 @@ def blank_object_mock():
     return obj
 
 
+class FakeExec:
+    def __init__(self, statement):
+        self.statement = statement
+
+    def all(self):
+
+        if "count(*)" in self.statement:
+            return [3]
+
+        if "SELECT fakemodel.id" in self.statement:
+            return fake_model_all_entries
+
+        return []
+
+
 class FakeSession:
     def __init__(self):
         self.added = None
@@ -39,6 +93,7 @@ class FakeSession:
         self.refreshed = None
         self.deleted = False
         self.got = None
+        self.execced = False
 
     def add(self, entry):
         if entry.id != test_uuid:
@@ -62,6 +117,24 @@ class FakeSession:
         if id == test_uuid:
             return fake_entry
         return None
+
+    def exec(self, statement):
+        statement = str(statement)
+        # Lazy way of testing if table doesn't exist
+        if "badtable" in statement:
+            raise ProgrammingError(
+                statement,
+                {},
+                Exception("relation does not exist"),
+            )
+
+        # Lazy way of testing if SQL query is wrong
+        if not statement.startswith("SELECT"):
+            raise SyntaxError(f"syntax error at or near {statement}")
+
+        self.execced = True
+
+        return FakeExec(statement)
 
     def __enter__(self):
         return obj
