@@ -17,34 +17,6 @@ from app.types.query_params import Offset, Limit, Order, UserFilter
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-"""
-To do:
-- √√√Get users by offset and limit
-- Give options for filtering
-    - √√√Currently it's just created_at and asc, this should be default
-    - Ensure that there's proper error handling for querying an incorrect column
-- √√√Ensure returning object also returns query information
-    - √√√E.g. an entries obj inside with offset, limit, etc. after.
-    - √√√Make sure type for get_all_users is updated accordingly
-- XXXASYNC/AWAIT
-    - XXXThis has been turned into a separate ticket
-- Unit tests
-    - √√√build_get_all_entries_query
-    - √√√execute_statement
-    - √√√get_entries_total_count_query
-    - √√√build_paginated_response
-    - get_all_users (make sure to use MagicMock here)
-- √√√Integration tests
-    - √√√get_all_users
-- √√√Figure out why build_paginated_response doesn't work and fix
-- √√√Find a way to make sure this returns a 200 as well
-- + error codes too
-- Make sure that the code is consistent and not a silly mix of OO and functional
-- √√√create a function to get the total amount of values from a db
-    - √√√then add that "total" to the paginated response
-    - √√√Also, use this to determine whether it's right to generate a next_url
-"""
-
 
 @router.get("/")
 def get_all_users(
