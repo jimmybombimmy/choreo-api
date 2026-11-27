@@ -1,12 +1,17 @@
 import pytest
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 from pydantic import HttpUrl
 
+from app.core.config import settings
 from app.enums.query_enums import UnaryExpressionStrings
 from app.api.v1.pagination import build_paginated_response
 from test.unit.mocks import (
     fake_model_all_entries,
     fake_model_out_all_entries,
+)
+
+PROTOCOL, HOST, PORT, API_V1_STR = attrgetter("PROTOCOL", "HOST", "PORT", "API_V1_STR")(
+    settings
 )
 
 
@@ -52,7 +57,7 @@ class TestBuildPaginatedResponse:
             {
                 "next": None,
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=50&filter=created_at&order=asc&offset=0"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=50&filter=created_at&order=asc&offset=0"
                 ),
             },
             id="offset",
@@ -62,7 +67,7 @@ class TestBuildPaginatedResponse:
             fake_model_out_all_entries[0:2],
             {
                 "next": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=2&filter=created_at&order=asc&offset=2"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=2&filter=created_at&order=asc&offset=2"
                 ),
                 "previous": None,
             },
@@ -73,10 +78,10 @@ class TestBuildPaginatedResponse:
             fake_model_out_all_entries[1:2],
             {
                 "next": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=1&filter=created_at&order=asc&offset=2"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=1&filter=created_at&order=asc&offset=2"
                 ),
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=1&filter=created_at&order=asc&offset=0"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=1&filter=created_at&order=asc&offset=0"
                 ),
             },
             id="limit+offset",
@@ -129,7 +134,7 @@ class TestBuildPaginatedResponse:
         assert result.total_count == 0
         assert result.next is None
         assert result.previous == HttpUrl(
-            "http://localhost:8000/api/v1/fake_model?limit=50&filter=created_at&order=asc&offset=0"
+            f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=50&filter=created_at&order=asc&offset=0"
         )
         assert result.offset == entries_length
         assert result.order == order
@@ -143,7 +148,7 @@ class TestBuildPaginatedResponse:
             {
                 "next": None,
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=3&filter=created_at&order=asc&offset=1"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=3&filter=created_at&order=asc&offset=1"
                 ),
             },
             id="offset=total+1_limit=total",
@@ -154,7 +159,7 @@ class TestBuildPaginatedResponse:
             {
                 "next": None,
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=20&filter=created_at&order=asc&offset=0"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=20&filter=created_at&order=asc&offset=0"
                 ),
             },
             id="offset-limit<0",
@@ -165,7 +170,7 @@ class TestBuildPaginatedResponse:
             {
                 "next": None,
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=49&filter=created_at&order=asc&offset=0"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=49&filter=created_at&order=asc&offset=0"
                 ),
             },
             id="offset-limit<0",
@@ -214,7 +219,7 @@ class TestBuildPaginatedResponse:
             {
                 "next": None,
                 "previous": HttpUrl(
-                    "http://localhost:8000/api/v1/fake_model?limit=2&filter=created_at&order=asc&offset=0"
+                    f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/fake_model?limit=2&filter=created_at&order=asc&offset=0"
                 ),
             },
             id="offset=1_limit=total-1",

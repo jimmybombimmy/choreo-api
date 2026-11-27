@@ -1,7 +1,7 @@
 from typing import Annotated
 import pytest
 from unittest.mock import Mock
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 
 from fastapi import Depends
 from fastapi.testclient import TestClient
@@ -12,6 +12,10 @@ from app.scripts.seed.test_data import test_users
 from app.core.config import settings
 from test.integration.conftest import bad_get_session
 from test.utils import sort_by_id
+
+PROTOCOL, HOST, PORT, API_V1_STR = attrgetter("PROTOCOL", "HOST", "PORT", "API_V1_STR")(
+    settings
+)
 
 build_get_all_entries_default_params = {
     "offset": 0,
@@ -32,7 +36,7 @@ class TestGetAllUsers:
         ):
             client = TestClient(app=app)
 
-            response = client.get(url=f"{settings.API_V1_STR}/users/")
+            response = client.get(url=f"{API_V1_STR}/users/")
             assert response.status_code == 200
 
             j = response.json()
@@ -58,7 +62,7 @@ class TestGetAllUsers:
             client = TestClient(app=app)
 
             response = client.get(
-                url=f"{settings.API_V1_STR}/users/",
+                url=f"{API_V1_STR}/users/",
                 params=build_get_all_entries_default_params,
             )
             assert response.status_code == 200
@@ -87,7 +91,7 @@ class TestGetAllUsers:
                 test_users[1:3],
                 {
                     "next": None,
-                    "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                    "previous": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
                 },
                 id="offset",
             ),
@@ -96,7 +100,7 @@ class TestGetAllUsers:
                 [],
                 {
                     "next": None,
-                    "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                    "previous": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
                 },
                 id="offset>values",
             ),
@@ -104,7 +108,7 @@ class TestGetAllUsers:
                 {**build_get_all_entries_default_params, "limit": 2},
                 test_users[0:2],
                 {
-                    "next": "http://localhost:8000/api/v1/users?limit=2&filter=created_at&order=asc&offset=2",
+                    "next": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=2&filter=created_at&order=asc&offset=2",
                     "previous": None,
                 },
                 id="limit",
@@ -113,8 +117,8 @@ class TestGetAllUsers:
                 {**build_get_all_entries_default_params, "limit": 1, "offset": 1},
                 test_users[1:2],
                 {
-                    "next": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=2",
-                    "previous": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=0",
+                    "next": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=1&filter=created_at&order=asc&offset=2",
+                    "previous": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=1&filter=created_at&order=asc&offset=0",
                 },
                 id="limit+offset",
             ),
@@ -147,8 +151,8 @@ class TestGetAllUsers:
                 # Sorted by ID, then reversed to get the second to last user
                 sort_by_id(sort_by_id(test_users)[-2:-1]),
                 {
-                    "next": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=2",
-                    "previous": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=0",
+                    "next": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=1&filter=id&order=desc&offset=2",
+                    "previous": f"{PROTOCOL}://{HOST}:{PORT}/api/v1/users?limit=1&filter=id&order=desc&offset=0",
                 },
                 id="all",
             ),
@@ -164,7 +168,7 @@ class TestGetAllUsers:
             client = TestClient(app=app)
 
             response = client.get(
-                url=f"{settings.API_V1_STR}/users/",
+                url=f"{API_V1_STR}/users/",
                 params={
                     "offset": offset,
                     "limit": limit,
@@ -203,7 +207,7 @@ class TestGetAllUsers:
 
             client = TestClient(app=app)
 
-            response = client.get(url=f"{settings.API_V1_STR}/users/")
+            response = client.get(url=f"{API_V1_STR}/users/")
             assert response.status_code == 200
 
             j = response.json()
@@ -364,7 +368,7 @@ class TestGetAllUsers:
             client = TestClient(app=app)
 
             response = client.get(
-                url=f"{settings.API_V1_STR}/users/",
+                url=f"{API_V1_STR}/users/",
                 params={
                     "offset": offset,
                     "limit": limit,
@@ -421,7 +425,7 @@ class TestGetAllUsers:
             ]
 
             response = client.get(
-                url=f"{settings.API_V1_STR}/users/",
+                url=f"{API_V1_STR}/users/",
                 params=bad_params,
             )
             assert response.status_code == 422
@@ -434,7 +438,7 @@ class TestGetAllUsers:
             )
 
             response = client.get(
-                url=f"{settings.API_V1_STR}/users/",
+                url=f"{API_V1_STR}/users/",
                 params={"session": bad_session_endpoint_fixture},
             )
 

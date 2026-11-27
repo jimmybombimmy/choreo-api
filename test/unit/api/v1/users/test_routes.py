@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 import pytest
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 import datetime
 from uuid import UUID
 import json
@@ -10,11 +10,14 @@ from sqlmodel import select
 from starlette.responses import JSONResponse
 
 from app.core.config import settings
-from app.core.errors import error_builder
 from app.types.schemas import GetAllPaginatedResponse
 from app.models.users import User
 from app.api.v1.users.routes import get_all_users
 from test.utils import sort_by_id
+
+PROTOCOL, HOST, PORT, API_V1_STR = attrgetter("PROTOCOL", "HOST", "PORT", "API_V1_STR")(
+    settings
+)
 
 """
 tests
@@ -142,7 +145,7 @@ class TestGetAllUsers:
             users_model_return[1:3],
             {
                 "next": None,
-                "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                "previous": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=50&filter=created_at&order=asc&offset=0",
             },
             id="offset",
         ),
@@ -151,7 +154,7 @@ class TestGetAllUsers:
             [],
             {
                 "next": None,
-                "previous": "http://localhost:8000/api/v1/users?limit=50&filter=created_at&order=asc&offset=0",
+                "previous": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=50&filter=created_at&order=asc&offset=0",
             },
             id="offset>values",
         ),
@@ -159,7 +162,7 @@ class TestGetAllUsers:
             {**build_get_all_entries_default_params, "limit": 2},
             users_model_return[0:2],
             {
-                "next": "http://localhost:8000/api/v1/users?limit=2&filter=created_at&order=asc&offset=2",
+                "next": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=2&filter=created_at&order=asc&offset=2",
                 "previous": None,
             },
             id="limit",
@@ -168,8 +171,8 @@ class TestGetAllUsers:
             {**build_get_all_entries_default_params, "limit": 1, "offset": 1},
             users_model_return[1:2],
             {
-                "next": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=2",
-                "previous": "http://localhost:8000/api/v1/users?limit=1&filter=created_at&order=asc&offset=0",
+                "next": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=1&filter=created_at&order=asc&offset=2",
+                "previous": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=1&filter=created_at&order=asc&offset=0",
             },
             id="limit+offset",
         ),
@@ -202,8 +205,8 @@ class TestGetAllUsers:
             # Sorted by ID, then reversed to get the second to last user
             sort_by_id(sort_by_id(users_model_return)[-2:-1]),
             {
-                "next": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=2",
-                "previous": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=0",
+                "next": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=1&filter=id&order=desc&offset=2",
+                "previous": f"{PROTOCOL}://{HOST}:{PORT}{API_V1_STR}/users?limit=1&filter=id&order=desc&offset=0",
             },
             id="all",
         ),
