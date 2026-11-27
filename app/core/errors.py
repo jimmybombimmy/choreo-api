@@ -4,7 +4,7 @@ from typing import Any
 def error_builder(
     Err: type[Exception],
     param: str,
-    invalid_value: Any,
+    invalid_value: Any,  # noqa: ANN401
     correct_type: str,
 ) -> Exception:
     if type(invalid_value) is str:

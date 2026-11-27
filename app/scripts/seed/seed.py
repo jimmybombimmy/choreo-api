@@ -7,7 +7,7 @@ from app.services.services import create_entry, delete_entry
 from app.types.models import ChoreoModel
 
 
-def run_seed():
+def run_seed() -> None:
     with Session(engine) as session:
         print("Deleting any seed entries that exist")
         for model in seed_deletable_data:
