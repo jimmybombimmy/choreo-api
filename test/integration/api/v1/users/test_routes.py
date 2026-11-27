@@ -11,6 +11,7 @@ from app.main import app
 from app.scripts.seed.test_data import test_users
 from app.core.config import settings
 from test.integration.conftest import bad_get_session
+from test.utils import sort_by_id
 
 build_get_all_entries_default_params = {
     "offset": 0,
@@ -18,15 +19,6 @@ build_get_all_entries_default_params = {
     "filter": "created_at",
     "order": "asc",
 }
-
-
-def sort_users_by_id(users):
-    ordered_users = []
-
-    for u in sorted(users, key=lambda item: item.id):
-        ordered_users.append(u)
-
-    return ordered_users
 
 
 SessionDep = Annotated[Session, Depends(bad_get_session)]
@@ -128,7 +120,7 @@ class TestGetAllUsers:
             ),
             pytest.param(
                 {**build_get_all_entries_default_params, "filter": "id"},
-                sort_users_by_id(test_users),
+                sort_by_id(test_users),
                 {
                     "next": None,
                     "previous": None,
@@ -153,7 +145,7 @@ class TestGetAllUsers:
                     "order": "desc",
                 },
                 # Sorted by ID, then reversed to get the second to last user
-                sort_users_by_id(sort_users_by_id(test_users)[-2:-1]),
+                sort_by_id(sort_by_id(test_users)[-2:-1]),
                 {
                     "next": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=2",
                     "previous": "http://localhost:8000/api/v1/users?limit=1&filter=id&order=desc&offset=0",
