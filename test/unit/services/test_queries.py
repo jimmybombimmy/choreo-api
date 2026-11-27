@@ -16,7 +16,7 @@ def build_expected_get_all_query(filter, order):
     """
 
     if order.upper() == "DESC":
-        order = ""
+        order = "DESC"
 
     return [
         "SELECT fake_model.id, fake_model.foo, fake_model.created_at",

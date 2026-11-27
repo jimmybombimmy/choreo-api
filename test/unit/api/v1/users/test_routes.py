@@ -45,7 +45,6 @@ users_model_return = [
         username="test-user1",
         created_at=datetime.datetime(2026, 11, 26, 6, 0, 41, 151115),
         id=UUID("852eac54-4d78-4f97-b311-6218d9ad1210"),
-        password="pass",
         updated_at=None,
     ),
     User(
@@ -53,7 +52,6 @@ users_model_return = [
         username="test-user2",
         created_at=datetime.datetime(2026, 11, 26, 6, 0, 41, 151152),
         id=UUID("a29526fd-998e-4c06-ac81-4702250e4c50"),
-        password="pass",
         updated_at=None,
     ),
     User(
@@ -61,7 +59,6 @@ users_model_return = [
         username="test-user3",
         created_at=datetime.datetime(2026, 11, 26, 6, 0, 41, 151171),
         id=UUID("620f33ab-afbe-4f06-b318-4032c1e79801"),
-        password="pass",
         updated_at=None,
     ),
 ]
@@ -245,7 +242,7 @@ class TestGetAllUsers:
                 offset=offset,
                 order=order,
                 sort_by=filter,
-                results=users_model_return,
+                results=results,
             ),
         )
 
@@ -269,7 +266,7 @@ class TestGetAllUsers:
         assert response_json["sort_by"] == filter
 
         test_users_out = []
-        for user in users_model_return:
+        for user in results:
             test_users_out.append(user.model_dump(mode="json"))
         for x in range(len(test_users_out)):
             assert test_users_out[x]["id"] == response_json["results"][x]["id"]
@@ -277,7 +274,7 @@ class TestGetAllUsers:
                 test_users_out[x]["username"] == response_json["results"][x]["username"]
             )
             assert test_users_out[x]["email"] == response_json["results"][x]["email"]
-            # Password to change
+            # Password not to be returned
             assert (
                 test_users_out[x]["created_at"]
                 == response_json["results"][x]["created_at"]

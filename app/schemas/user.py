@@ -15,6 +15,6 @@ class UserOut(BaseModel):
     id: UUID
     username: str
     email: str
-    password: str
+    # password: str
     created_at: datetime
     updated_at: datetime | None

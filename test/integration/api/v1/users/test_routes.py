@@ -334,10 +334,10 @@ class TestGetAllUsers:
                     {
                         "type": "enum",
                         "loc": ["query", "order"],
-                        "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        "msg": "Input should be 'asc', 'desc', 'nulls_first' or 'nulls_last'",
                         "input": "bad_field",
                         "ctx": {
-                            "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                            "expected": "'asc', 'desc', 'nulls_first' or 'nulls_last'",
                         },
                     }
                 ],
@@ -349,10 +349,10 @@ class TestGetAllUsers:
                     {
                         "type": "enum",
                         "loc": ["query", "order"],
-                        "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                        "msg": "Input should be 'asc', 'desc', 'nulls_first' or 'nulls_last'",
                         "input": "123",
                         "ctx": {
-                            "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                            "expected": "'asc', 'desc', 'nulls_first' or 'nulls_last'",
                         },
                     }
                 ],
@@ -416,11 +416,9 @@ class TestGetAllUsers:
                 {
                     "type": "enum",
                     "loc": ["query", "order"],
-                    "msg": "Input should be 'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'",
+                    "msg": "Input should be 'asc', 'desc', 'nulls_first' or 'nulls_last'",
                     "input": "bad",
-                    "ctx": {
-                        "expected": "'asc', 'desc', 'distinct', 'nulls_first' or 'nulls_last'"
-                    },
+                    "ctx": {"expected": "'asc', 'desc', 'nulls_first' or 'nulls_last'"},
                 },
             ]
 
